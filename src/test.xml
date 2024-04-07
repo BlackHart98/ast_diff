@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+<tree type="file_input" pos="0" length="5">
+        <tree type="atom_expr" pos="0" length="5">
+                <tree type="name" pos="0" length="3" label="foo"/>
+                <tree type="trailer" pos="3" length="2"/>
+        </tree>
+</tree>
