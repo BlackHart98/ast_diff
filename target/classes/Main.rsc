@@ -39,10 +39,6 @@ data SimpleExpr = number(str intlit);
 
 
 
-@javaClass{internals.RascalGumTree}
-java node getRascalNode();
-
-
 int main(int testArgument=0) {
 
 
@@ -51,8 +47,9 @@ int main(int testArgument=0) {
     str result_1 = toGumTree(temp_ast_1);
     str result_2 = toGumTree(temp_ast_2);
 
-    iprintln(compareAST(result_1, result_2));
+    str foo = compareAST(result_1, result_2);
 
+    writeFile(|project://ast_diff/src/diff.xml|, foo);
 
     return testArgument;
 }

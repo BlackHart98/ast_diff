@@ -13,7 +13,6 @@ import com.github.gumtreediff.actions.SimplifiedChawatheScriptGenerator;
 import io.usethesource.vallang.IValueFactory;
 import com.github.gumtreediff.matchers.optimal.zs.ZsMatcher;
 
-import io.usethesource.vallang.INode;
 
 
 import java.io.*;
