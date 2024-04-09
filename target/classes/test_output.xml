@@ -1,14 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tree type="add" length="9" pos="0">
-  <tree type="add" length="5" pos="0">
-    <tree type="number" length="1" pos="0">
-      <tree type="token" length="1" pos="0" label="2" />
-    </tree>
-    <tree type="number" length="1" pos="4">
-      <tree type="token" length="1" pos="4" label="4" />
-    </tree>
+<tree type="add" length="5" pos="0">
+  <tree type="number" length="1" pos="0">
+    <tree type="token" length="1" pos="0" label="2" />
   </tree>
-  <tree type="number" length="1" pos="8">
-    <tree type="token" length="1" pos="8" label="3" />
+  <tree type="number" length="1" pos="4">
+    <tree type="token" length="1" pos="4" label="3" />
   </tree>
 </tree>
