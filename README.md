@@ -5,3 +5,7 @@
 ## On MacOS
 
 * Update `rascal.sh` with the directory where `rascal-shell-stable.jar` is located on your local machine.
+
+
+> [!Warning]
+> Must be Java 17 or newer
