@@ -1,16 +1,19 @@
 package internals;
 
+import com.github.gumtreediff.io.ActionsIoUtils;
 import com.github.gumtreediff.io.TreeIoUtils;
 import com.github.gumtreediff.tree.Tree;
+import com.github.gumtreediff.tree.TreeContext;
 import io.usethesource.vallang.IString;
 import com.github.gumtreediff.matchers.MappingStore;
-// import com.github.gumtreediff.matchers.Matcher;
-// import com.github.gumtreediff.matchers.Matchers;
+
 import com.github.gumtreediff.actions.EditScript;
 import com.github.gumtreediff.actions.EditScriptGenerator;
 import com.github.gumtreediff.actions.SimplifiedChawatheScriptGenerator;
 import io.usethesource.vallang.IValueFactory;
 import com.github.gumtreediff.matchers.optimal.zs.ZsMatcher;
+
+import io.usethesource.vallang.INode;
 
 
 import java.io.*;
@@ -22,35 +25,30 @@ public class RascalGumTree {
         this.vf = vf;
     }
 
-    Tree generateTree(IString input) throws IOException {
+    TreeContext generateTree(IString input) throws IOException {
         String input_str = input.getValue();
         if (input_str instanceof String)
-            return TreeIoUtils.fromXml().generateFrom().string(input_str).getRoot();
+            return TreeIoUtils.fromXml().generateFrom().string(input_str);
         else
             throw new IllegalArgumentException("Input is not a valid string");
     }
 
 
     public final IString compareAST(IString src, IString dst) throws IOException{
-        Tree src_tree = generateTree(src);
-        Tree dst_tree = generateTree(dst);
-        if (src_tree instanceof Tree && dst_tree instanceof Tree){
-            MappingStore mappings = new ZsMatcher().match(src_tree, dst_tree);
+        TreeContext src_ctx = generateTree(src);
+        TreeContext dst_ctx = generateTree(dst);
+        if (src_ctx.getRoot() instanceof Tree && dst_ctx.getRoot() instanceof Tree){
+            MappingStore mappings = new ZsMatcher().match(src_ctx.getRoot(), dst_ctx.getRoot());
             EditScript actions = deduceActions(mappings);
-
-            System.out.println("mappings"); // for debugging purpose
-            System.out.println(actions.toString()); // for debugging purpose
-
-            
-            return vf.string("Hello"); // This is will be replaced with a Rascal compatible object
+            return vf.string(ActionsIoUtils.toXml(src_ctx, actions, mappings).toString()); // This is will be replaced with a Rascal compatible object
         } else{
             throw new IllegalArgumentException("Inputs are not valid GumTree AST");
         }
     }
 
-    EditScript deduceActions(MappingStore mappings){
+    private EditScript deduceActions(MappingStore mappings){
         EditScriptGenerator editScriptGenerator = new SimplifiedChawatheScriptGenerator();
         return editScriptGenerator.computeActions(mappings);
     }
-}
 
+}

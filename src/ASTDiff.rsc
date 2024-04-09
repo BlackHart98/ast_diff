@@ -1,42 +1,27 @@
-module TestXML
+module ASTDiff
 
 import lang::xml::DOM;
-import IO;
-import List;
+// import IO;
+// import List;
 import Node;
 import Type;
 import ParseTree;
 
 
-start syntax SimpleExpr = left add: SimpleExpr "+" SimpleExpr;
 
-syntax SimpleExpr = number: INT;
+// Actions
+data Actions = actions(list[Action] action_list);
 
-lexical INT = [0-9] !<< [0-9]+ !>> [0-9];
-
-layout Standard 
-	= WhitespaceOrComment* !>> [\u0009-\u000D \u0020 \u0085 \u00A0 \u1680 \u180E \u2000-\u200A \u2028 \u2029 \u202F \u205F \u3000] !>> "--"
-	;
-
-lexical COMMENT_LIT 
-	= @category="COMMENT_LIT" "--" ![\n]* $
-	;
-
-syntax WhitespaceOrComment 
-	= whitespace: Whitespace | comment_lit: COMMENT_LIT
-	;
-
-lexical Whitespace
-	= [\u0009-\u000D \u0020 \u0085 \u00A0 \u1680 \u180E \u2000-\u200A \u2028 \u2029 \u202F \u205F \u3000]
-	;
-
-
-// ADT
-data SimpleExpr = \add(SimpleExpr left, SimpleExpr right);
-data SimpleExpr = number(str intlit);
-
-
+data Action 
+    = \insert() 
+    | move() 
+    | delete() 
+    | update(str old_label, str new_label)
+    ;
     
+@javaClass{internals.RascalGumTree}
+java str compareAST(str src, str dst);
+
 
 // Rascal AST to GumTree XML
 str toGumTree(&T <: node input_ast){
@@ -78,4 +63,8 @@ str toGumTree(&T <: node input_ast){
     
     return xmlPretty(document(result));
 }
+
+// private Node deserializeActions(str xml){
+
+// }
 
