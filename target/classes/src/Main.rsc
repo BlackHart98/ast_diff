@@ -43,7 +43,7 @@ int main(int testArgument=0) {
 
 
     SimpleExpr temp_ast_1 = implode(#SimpleExpr, parse(#start[SimpleExpr], "2 + 3"));
-    SimpleExpr temp_ast_2 = implode(#SimpleExpr, parse(#start[SimpleExpr], "2 + 4 + 3"));
+    SimpleExpr temp_ast_2 = implode(#SimpleExpr, parse(#start[SimpleExpr], "2         + 5"));
     str result_1 = toGumTree(temp_ast_1);
     str result_2 = toGumTree(temp_ast_2);
 

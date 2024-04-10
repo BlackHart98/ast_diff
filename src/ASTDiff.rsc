@@ -7,18 +7,8 @@ import lang::json::IO;
 import Node;
 import Type;
 import ParseTree;
+import IO;
 
-
-
-// Actions
-data Actions = actions(list[Action] action_list);
-
-data Action 
-    = \insert() 
-    | move() 
-    | delete() 
-    | update(str old_label, str new_label)
-    ;
     
 @javaClass{internals.RascalGumTree}
 java str compareAST(str src, str dst);
@@ -43,7 +33,7 @@ str toGumTree(&T <: node input_ast){
 
     Node toGumTreeNode(str child, int length=0, int offset=0){
         Node result = element(none(), "tree", []);
-        result.children += [attribute(none(), "type", "token")]
+        result.children += [attribute(none(), "type", "$token$")]
             + [attribute(none(), "length", "<length>")]
             + [attribute(none(), "pos", "<offset>")]
             + [attribute(none(), "label", child)]
@@ -61,9 +51,19 @@ str toGumTree(&T <: node input_ast){
         + [toGumTreeNode(x)| x <- getChildren(input_ast) && [*_] !:= x]
         ;
     
+    Node t = document(result);
+
+    Node collapseToken(Node t){
+        return top-down visit(t){
+            case element(_, _,[x, y, z, element(_, _, [attribute(_, _, "$token$"), _, _, w])]) 
+            => element(none(), "tree", [x, y, z, w])
+        };
+    }
     
-    return xmlPretty(document(result));
+    return xmlPretty(collapseToken(t));
 }
+
+
 
 JSON deserializeActions(str json) = fromJSON(#JSON, json);
 
