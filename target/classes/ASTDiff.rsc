@@ -1,8 +1,9 @@
 module ASTDiff
 
 import lang::xml::DOM;
-// import IO;
-// import List;
+import lang::json::ast::JSON;
+// import lang::json::ast::Implode;
+import lang::json::IO;
 import Node;
 import Type;
 import ParseTree;
@@ -64,7 +65,6 @@ str toGumTree(&T <: node input_ast){
     return xmlPretty(document(result));
 }
 
-// private Node deserializeActions(str xml){
+JSON deserializeActions(str json) = fromJSON(#JSON, json);
 
-// }
 

@@ -49,7 +49,8 @@ int main(int testArgument=0) {
 
     str foo = compareAST(result_1, result_2);
 
-    writeFile(|project://ast_diff/src/diff.xml|, foo);
+    writeFile(|project://ast_diff/src/diff.json|, foo);
 
+    iprintln(deserializeActions(foo));
     return testArgument;
 }

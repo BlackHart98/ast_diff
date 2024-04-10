@@ -1,0 +1,44 @@
+{
+  "matches": [
+    {
+      "src": "add [0,5]",
+      "dest": "add [0,9]"
+    },
+    {
+      "src": "number [0,1]",
+      "dest": "number [0,1]"
+    },
+    {
+      "src": "token: 2 [0,1]",
+      "dest": "token: 2 [0,1]"
+    },
+    {
+      "src": "number [4,5]",
+      "dest": "number [8,9]"
+    },
+    {
+      "src": "token: 3 [4,5]",
+      "dest": "token: 3 [8,9]"
+    }
+  ],
+  "actions": [
+    {
+      "action": "insert-node",
+      "tree": "add [0,5]",
+      "parent": "add [0,9]",
+      "at": 0
+    },
+    {
+      "action": "move-tree",
+      "tree": "number [0,1]",
+      "parent": "add [0,5]",
+      "at": 0
+    },
+    {
+      "action": "insert-tree",
+      "tree": "number [4,5]",
+      "parent": "add [0,5]",
+      "at": 1
+    }
+  ]
+}

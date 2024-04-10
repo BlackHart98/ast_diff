@@ -39,7 +39,7 @@ public class RascalGumTree {
         if (src_ctx.getRoot() instanceof Tree && dst_ctx.getRoot() instanceof Tree){
             MappingStore mappings = new ZsMatcher().match(src_ctx.getRoot(), dst_ctx.getRoot());
             EditScript actions = deduceActions(mappings);
-            return vf.string(ActionsIoUtils.toXml(src_ctx, actions, mappings).toString()); // This is will be replaced with a Rascal compatible object
+            return vf.string(ActionsIoUtils.toJson(src_ctx, actions, mappings).toString()); // This is will be replaced with a Rascal compatible object
         } else{
             throw new IllegalArgumentException("Inputs are not valid GumTree AST");
         }
