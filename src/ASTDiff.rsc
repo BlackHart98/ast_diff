@@ -7,7 +7,7 @@ import lang::json::IO;
 import Node;
 import Type;
 import ParseTree;
-import IO;
+// import IO;
 
     
 @javaClass{internals.RascalGumTree}
@@ -33,7 +33,7 @@ str toGumTree(&T <: node input_ast){
 
     Node toGumTreeNode(str child, int length=0, int offset=0){
         Node result = element(none(), "tree", []);
-        result.children += [attribute(none(), "type", "$token$")]
+        result.children += [attribute(none(), "type", "$token")]
             + [attribute(none(), "length", "<length>")]
             + [attribute(none(), "pos", "<offset>")]
             + [attribute(none(), "label", child)]
@@ -55,11 +55,11 @@ str toGumTree(&T <: node input_ast){
 
     Node collapseToken(Node t){
         return top-down visit(t){
-            case element(_, _,[x, y, z, element(_, _, [attribute(_, _, "$token$"), _, _, w])]) 
+            case element(_, _,[x, y, z, element(_, _, [attribute(_, _, "$token"), _, _, w])]) 
             => element(none(), "tree", [x, y, z, w])
         };
     }
-    
+
     return xmlPretty(collapseToken(t));
 }
 

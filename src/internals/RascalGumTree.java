@@ -9,7 +9,7 @@ import com.github.gumtreediff.matchers.MappingStore;
 
 import com.github.gumtreediff.actions.EditScript;
 import com.github.gumtreediff.actions.EditScriptGenerator;
-import com.github.gumtreediff.actions.SimplifiedChawatheScriptGenerator;
+import com.github.gumtreediff.actions.ChawatheScriptGenerator;
 import io.usethesource.vallang.IValueFactory;
 import com.github.gumtreediff.matchers.optimal.zs.ZsMatcher;
 
@@ -46,7 +46,7 @@ public class RascalGumTree {
     }
 
     private EditScript deduceActions(MappingStore mappings){
-        EditScriptGenerator editScriptGenerator = new SimplifiedChawatheScriptGenerator();
+        EditScriptGenerator editScriptGenerator = new ChawatheScriptGenerator();
         return editScriptGenerator.computeActions(mappings);
     }
 

@@ -1,23 +1,36 @@
 {
   "matches": [
     {
-      "src": "add [0,5]",
-      "dest": "add [0,13]"
-    },
-    {
       "src": "number: 2 [0,1]",
       "dest": "number: 2 [0,1]"
     },
     {
+      "src": "add [0,5]",
+      "dest": "add [0,13]"
+    },
+    {
       "src": "number: 3 [4,5]",
-      "dest": "number: 5 [12,13]"
+      "dest": "number: 3 [12,13]"
     }
   ],
   "actions": [
     {
-      "action": "update-node",
-      "tree": "number: 3 [4,5]",
-      "label": "5"
+      "action": "insert-node",
+      "tree": "sub [0,17]",
+      "parent": "FakeTree",
+      "at": 0
+    },
+    {
+      "action": "move-tree",
+      "tree": "add [0,5]",
+      "parent": "sub [0,17]",
+      "at": 0
+    },
+    {
+      "action": "insert-node",
+      "tree": "number: 4 [16,17]",
+      "parent": "sub [0,17]",
+      "at": 1
     }
   ]
 }
