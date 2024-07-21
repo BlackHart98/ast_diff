@@ -44,7 +44,6 @@ data SimpleExpr = number(str intlit);
 
 
 int main(int testArgument=0) {
-
-    iprintln(diff(#start[SimpleExprList], #SimpleExprList, "2 + 4 + 2", "4 + 2"));
+    iprintln(diff(#start[SimpleExprList], #SimpleExprList, "4 + 2", "4 - 2"));
     return testArgument;
 }
