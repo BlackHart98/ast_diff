@@ -2,7 +2,6 @@ module ASTDiff
 
 import lang::xml::DOM;
 import lang::json::ast::JSON;
-// import lang::json::ast::Implode;
 import lang::json::IO;
 import Node;
 import Type;
@@ -12,7 +11,6 @@ import Node;
 import List;
 import String;
 
-// syntax 
 
 
 @javaClass{internals.RascalGumTree}
@@ -83,23 +81,26 @@ str toGumTree(&T <: node input_ast){
 JSON deserializeActions(str json) = fromJSON(#JSON, json);
 
 
-// Diff algorithms
-data DiffTree 
-    = insertNode(node node_) 
+// Diff 
+
+alias DiffTree = tuple[loc src, loc dest, list[DiffNode] diffNodeList];
+
+data DiffNode 
+    = insertNode(node tree) 
     | keepNode(node src, node dest) 
-    | removeNode(node node_)
+    | removeNode(node tree)
     | updateNode(node src)
-    | moveNode(node node_)
+    | moveNode(node tree)
     | matchedNode(node src, node dest)
     | emptyNode()
     ;
 
 
-list[DiffTree] makeDiffTreeKeep(list[DiffTree] diff_tree_list){
+list[DiffNode] makeDiffNodeKeep(list[DiffNode] diff_tree_list){
     return [keepNode(src, dest) | matchedNode(src, dest)  <- diff_tree_list && src := dest];
 }
 
-DiffTree makeDiffTreeMatch(JSON json_obj){
+DiffNode makeDiffNodeMatch(JSON json_obj){
     switch (json_obj){
         case object(x): {
             makeDiffNode(x["src"]);
@@ -110,7 +111,7 @@ DiffTree makeDiffTreeMatch(JSON json_obj){
 }
 
 
-DiffTree makeDiffTree(JSON json_obj){
+DiffNode makeDiffNode(JSON json_obj){
     switch (json_obj){
         case object(x): {
             if(x["action"] == string("move-tree")){
@@ -129,26 +130,34 @@ DiffTree makeDiffTree(JSON json_obj){
     }
 }
 
-list[DiffTree] _diff(
+DiffTree _diff(
     JSON diff_json
     , loc src_loc=|unknown:///|
     , loc dest_loc=|unknown:///|){
-    list[DiffTree] match_nodes = [makeDiffTreeMatch(x) | x <- diff_json.properties["matches"].values];
-    list[DiffTree] keep_nodes = makeDiffTreeKeep(match_nodes);
-    list[DiffTree] other_nodes = [makeDiffTree(action)| action <- diff_json.properties["actions"].values];
+    list[DiffNode] match_nodes = [makeDiffNodeMatch(x) | x <- diff_json.properties["matches"].values];
+    list[DiffNode] keep_nodes = makeDiffNodeKeep(match_nodes);
+    list[DiffNode] other_nodes = [makeDiffNode(action)| action <- diff_json.properties["actions"].values];
 
-    return keep_nodes + other_nodes;
+    return <src_loc, dest_loc, (keep_nodes + other_nodes)>;
 }
 
 
 node makeDiffNode(string(str x)){
     list[str] temp_ = split(" ", x);
-    // println("splited string: <makeNode(temp_[0], temp_[1..-1])>");
-    return makeNode(replaceLast(temp_[0], ":", ""), temp_[1..-1]);
+    list[str] tempLast_ = split(",", replaceFirst(replaceLast(temp_[-1], "]", ""), "[", ""));
+
+    list[int] location = [toInt(x) | str x <- tempLast_];
+
+    return makeNode(
+        replaceLast(
+            temp_[0], ":", "")
+            , temp_[1..-1]
+            , keywordParameters = ("location":location)
+        );
 }
 
 
-list[DiffTree] diff(
+DiffTree diff(
     type[&T <: Tree] grammar
     , type[&U <: node] ast
     , str src
@@ -163,22 +172,22 @@ list[DiffTree] diff(
     str compare_ast = compareAST(result_1, result_2);
     JSON deserialize_actions = deserializeActions(compare_ast);
 
-    return _diff(deserialize_actions);
+    return  _diff(deserialize_actions, src_loc=src_loc, dest_loc=dest_loc);
 }
 
 
-list[DiffTree] diff(
+DiffTree diff(
     type[&T <: Tree] grammar
     , type[&U <: node] ast
-    , loc src_file
-    , loc dest_file){
+    , loc src_loc
+    , loc dest_loc){
 
-    node temp_ast_1 = implode(ast, parse(grammar, readFile(src_file)));
-    node temp_ast_2 = implode(ast, parse(grammar, readFile(dest_file)));
+    node temp_ast_1 = implode(ast, parse(grammar, readFile(src_loc)));
+    node temp_ast_2 = implode(ast, parse(grammar, readFile(dest_loc)));
     str result_1 = toGumTree(temp_ast_1);
     str result_2 = toGumTree(temp_ast_2);
     str compare_ast = compareAST(result_1, result_2);
     JSON deserialize_actions = deserializeActions(compare_ast);
 
-    return _diff(deserialize_actions);
+    return _diff(deserialize_actions, src_loc=src_loc, dest_loc=dest_loc);
 }
