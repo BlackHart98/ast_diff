@@ -6,7 +6,10 @@ import ASTDiff;
 import ParseTree;
 
 
-start syntax SimpleExpr 
+
+start syntax SimpleExprList = simpleExprList: SimpleExpr+;
+
+syntax SimpleExpr 
     = left add: SimpleExpr "+" SimpleExpr
     > left sub: SimpleExpr "-" SimpleExpr
     ;
@@ -33,6 +36,7 @@ lexical Whitespace
 
 
 // ADT
+data SimpleExprList = simpleExprList(list[SimpleExpr] exprList);
 data SimpleExpr = \add(SimpleExpr left, SimpleExpr right);
 data SimpleExpr = sub(SimpleExpr left, SimpleExpr right);
 data SimpleExpr = number(str intlit);
@@ -41,16 +45,6 @@ data SimpleExpr = number(str intlit);
 
 int main(int testArgument=0) {
 
-
-    SimpleExpr temp_ast_1 = implode(#SimpleExpr, parse(#start[SimpleExpr], "2 + 3"));
-    SimpleExpr temp_ast_2 = implode(#SimpleExpr, parse(#start[SimpleExpr], "2         + 3 - 4"));
-    str result_1 = toGumTree(temp_ast_1);
-    str result_2 = toGumTree(temp_ast_2);
-
-    str foo = compareAST(result_1, result_2);
-
-    writeFile(|project://ast_diff/src/diff.json|, foo);
-
-    iprintln(deserializeActions(foo));
+    iprintln(diff(#start[SimpleExprList], #SimpleExprList, "2 + 4 + 2", "4 + 2"));
     return testArgument;
 }

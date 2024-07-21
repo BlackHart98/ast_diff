@@ -45,9 +45,26 @@ public class RascalGumTree {
         }
     }
 
+    public final IString compareASTXml(IString src, IString dst) throws IOException{
+        TreeContext src_ctx = generateTree(src);
+        TreeContext dst_ctx = generateTree(dst);
+        if (src_ctx.getRoot() instanceof Tree && dst_ctx.getRoot() instanceof Tree){
+            MappingStore mappings = new ZsMatcher().match(src_ctx.getRoot(), dst_ctx.getRoot());
+            EditScript actions = deduceActions(mappings);
+            return vf.string(ActionsIoUtils.toXml(src_ctx, actions, mappings).toString()); // This is will be replaced with a Rascal compatible object
+        } else{
+            throw new IllegalArgumentException("Inputs are not valid GumTree AST");
+        }
+    }
+
     private EditScript deduceActions(MappingStore mappings){
         EditScriptGenerator editScriptGenerator = new ChawatheScriptGenerator();
         return editScriptGenerator.computeActions(mappings);
     }
+
+    // private String toJsonRascal(TreeContext src_ctx, EditScript actions, MappingStore mappings){
+
+    //     return "";
+    // }
 
 }
