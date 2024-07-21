@@ -161,9 +161,7 @@ DiffTree diff(
     type[&T <: Tree] grammar
     , type[&U <: node] ast
     , str src
-    , str dest
-    , loc src_loc=|unknown:///|
-    , loc dest_loc=|unknown:///|){
+    , str dest){
 
     node temp_ast_1 = implode(ast, parse(grammar, src));
     node temp_ast_2 = implode(ast, parse(grammar, dest));
@@ -172,7 +170,7 @@ DiffTree diff(
     str compare_ast = compareAST(result_1, result_2);
     JSON deserialize_actions = deserializeActions(compare_ast);
 
-    return  _diff(deserialize_actions, src_loc=src_loc, dest_loc=dest_loc);
+    return  _diff(deserialize_actions, src_loc=|unknown:///|, dest_loc=|unknown:///|);
 }
 
 
