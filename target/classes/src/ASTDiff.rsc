@@ -129,7 +129,10 @@ DiffTree makeDiffTree(JSON json_obj){
     }
 }
 
-list[DiffTree] _diff(JSON diff_json, loc file_loc=|unknown:///|){
+list[DiffTree] _diff(
+    JSON diff_json
+    , loc src_loc=|unknown:///|
+    , loc dest_loc=|unknown:///|){
     list[DiffTree] match_nodes = [makeDiffTreeMatch(x) | x <- diff_json.properties["matches"].values];
     list[DiffTree] keep_nodes = makeDiffTreeKeep(match_nodes);
     list[DiffTree] other_nodes = [makeDiffTree(action)| action <- diff_json.properties["actions"].values];
@@ -150,7 +153,8 @@ list[DiffTree] diff(
     , type[&U <: node] ast
     , str src
     , str dest
-    , loc file_loc=|unknown:///|){
+    , loc src_loc=|unknown:///|
+    , loc dest_loc=|unknown:///|){
 
     node temp_ast_1 = implode(ast, parse(grammar, src));
     node temp_ast_2 = implode(ast, parse(grammar, dest));
