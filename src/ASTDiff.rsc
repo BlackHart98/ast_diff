@@ -89,7 +89,7 @@ data DiffNode
     = insertNode(node tree) 
     | keepNode(node src, node dest) 
     | removeNode(node tree)
-    | updateNode(node src)
+    | updateNode(node src, node dest)
     | moveNode(node tree)
     | matchedNode(node src, node dest)
     | emptyNode()
@@ -110,6 +110,11 @@ DiffNode makeDiffNodeMatch(JSON json_obj){
     }
 }
 
+DiffNode makeUpdateNode(map[str, JSON] x){
+    node temp_ = makeDiffNode(x["tree"]);
+    list[str] children = string(child_) := x["label"]? [child_]:[];
+    return updateNode(temp_, makeNode(getName(temp_), children));
+}
 
 DiffNode makeDiffNode(JSON json_obj){
     switch (json_obj){
@@ -118,12 +123,10 @@ DiffNode makeDiffNode(JSON json_obj){
                 return moveNode(makeDiffNode(x["tree"]));
             } else if (x["action"] == string("delete-node")){
                 return removeNode(makeDiffNode(x["tree"]));
-            } else if (x["action"] == string("update-node")){
-                return updateNode(makeDiffNode(x["tree"]));
             } else if (x["action"] == string("insert-node")){
                 return insertNode(makeDiffNode(x["tree"]));
             } else{
-                return emptyNode();
+                return makeUpdateNode(x);
             }
         }
         default: return emptyNode();
@@ -170,6 +173,7 @@ DiffTree diff(
     str compare_ast = compareAST(result_1, result_2);
     JSON deserialize_actions = deserializeActions(compare_ast);
 
+    // iprintln(deserialize_actions);
     return  _diff(deserialize_actions, src_loc=|unknown:///|, dest_loc=|unknown:///|);
 }
 
@@ -187,5 +191,6 @@ DiffTree diff(
     str compare_ast = compareAST(result_1, result_2);
     JSON deserialize_actions = deserializeActions(compare_ast);
 
+    // iprintln("Matches&Actios:\n<deserialize_actions>");
     return _diff(deserialize_actions, src_loc=src_loc, dest_loc=dest_loc);
 }
