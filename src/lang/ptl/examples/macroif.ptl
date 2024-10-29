@@ -1,0 +1,29 @@
+module macroif
+
+defmacro createDim(y)
+  {% if y == "User" %} {
+    entity #{y} 
+      firstname : String
+      lastname : String
+      category : String 
+    end entity
+    }
+  
+  {% else if y == "Account" %} {
+    entity #{y} 
+      acctname : String
+      owner : String
+      category : String 
+      validat : String
+      expiredat : String
+    end entity
+    }
+
+  {% else %} {
+    entity #{y} 
+      elseguy : String
+    end entity
+  }
+end defmacro
+
+createDim!("User")

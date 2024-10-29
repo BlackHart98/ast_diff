@@ -1,0 +1,23 @@
+module dim_customer
+
+import com.Periteleios.dimcustomer.*
+
+val Dim_customer = master.dimcustomer
+configuration Dim_customer:
+      version = 1.0.0
+	   adept_version = 0.1.0
+	   project_id = "CustomerMgmt"
+       
+       environments:
+		   environment Dev:
+			  runtime = Docker
+			  target = OnPrem
+		     sqlEngine = SQLEngine(type=Spark, version=4.0)
+
+       pipelines :
+           pipeline CustomerTransformation:
+              retries = 1
+              view Dim_customer:
+                 viewRef = Dim_customer
+                 materializedAs = Table
+                 latency = Batch(cadence=@daily)

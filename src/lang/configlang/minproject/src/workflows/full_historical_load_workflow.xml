@@ -1,0 +1,343 @@
+<workflow-app xmlns="uri:oozie:workflow:0.5" name="full-historical-load-workflow">
+    <start to="start-historical-load"/>
+
+    <action name="start-historical-load">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>${start_historical_load_script}</exec>
+            <capture-output/>
+        </shell>
+        <ok to="create_staging_schema"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="create-staging-schema">
+        <hive xmlns="uri:oozie:hive-action:0.5">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <script>${create_staging_schema_hive}</script>
+        </hive>
+        <ok to="ingest-operational-data"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="ingest-operational-data">
+        <hive xmlns="uri:oozie:hive-action:0.5">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <script>${ingest_operational_data_script}</script>
+        </hive>
+        <ok to="create-master-schema"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="create-master-schema">
+        <hive xmlns="uri:oozie:hive-action:0.5">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <script>${create_master_schema_hive}</script>
+        </hive>
+        <ok to="load-audit"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="load-audit">
+        <hive xmlns="uri:oozie:hive-action:0.5">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <script>${load_audit_hive}</script>
+        </hive>
+        <ok to="fork1"/>
+        <error to="fail"/>
+    </action>
+
+    <fork name="fork1">
+        <path start="load-master-tradetype"/>
+        <path start="load-master-statustype"/>
+        <path start="load-master-taxrate"/>
+        <path start="load-master-industry"/>
+        <path start="transform-load-master-dimdate"/>
+        <path start="transform-load-master-dimtime"/>
+        <path start="transform-load-master-dimcompany"/>
+    </fork>
+
+    <action name="load-master-tradetype">
+        <hive xmlns="uri:oozie:hive-action:0.5">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <script>${load_master_tradetype_hive}</script>
+        </hive>
+        <ok to="join1"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="load-master-statustype">
+        <hive xmlns="uri:oozie:hive-action:0.5">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <script>${load_master_statustype_hive}</script>
+        </hive>
+        <ok to="join1"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="load-master-taxrate">
+        <hive xmlns="uri:oozie:hive-action:0.5">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <script>${load_master_taxrate_hive}</script>
+        </hive>
+        <ok to="join1"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="load-master-industry">
+        <hive xmlns="uri:oozie:hive-action:0.5">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <script>${load_master_industry_hive}</script>
+        </hive>
+        <ok to="join1"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="transform-load-master-dimdate">
+        <hive xmlns="uri:oozie:hive-action:0.5">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <script>${transform_load_master_dimdate_hive}</script>
+        </hive>
+        <ok to="join1"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="transform-load-master-dimtime">
+        <hive xmlns="uri:oozie:hive-action:0.5">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <script>${transform_load_master_dimtime_hive}</script>
+        </hive>
+        <ok to="join1"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="transform-load-master-dimcompany">
+        <hive xmlns="uri:oozie:hive-action:0.5">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <script>${transform_load_master_dimcompany_hive}</script>
+        </hive>
+        <ok to="join1"/>
+        <error to="fail"/>
+    </action>
+
+    <join name = "join1" to = "fork2"/>
+
+
+    <fork name="fork2">
+        <path start="load-master-dimessages-dimcompany"/>
+        <path start="transform-load-master-dimbroker"/>
+        <path start="transform-load-master-prospect"/>
+    </fork>
+
+    <action name="load-master-dimessages-dimcompany">
+        <hive xmlns="uri:oozie:hive-action:0.5">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <script>${load_master_dimessages_dimcompany_hive}</script>
+        </hive>
+        <ok to="join2"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="transform-load-master-dimbroker">
+        <hive xmlns="uri:oozie:hive-action:0.5">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <script>${transform_load_master_dimbroker_hive}</script>
+        </hive>
+        <ok to="join2"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="transform-load-master-prospect">
+        <hive xmlns="uri:oozie:hive-action:0.5">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <script>${transform_load_master_prospect_hive}</script>
+        </hive>
+        <ok to="transform-load-master-dimcustomer"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="transform-load-master-dimcustomer">
+        <hive xmlns="uri:oozie:hive-action:0.5">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <script>${transform_load_master_dimcustomer_hive}</script>
+        </hive>
+        <ok to="join2"/>
+        <error to="fail"/>
+    </action>
+
+    <join name = "join2" to = "fork3"/>
+
+    <fork name="fork3">
+        <path start="load-master-dimessages-dimcustomer"/>
+        <path start="update-master-prospect"/>
+        <path start="transform-load-master-dimaccount"/>
+        <path start="transform-load-master-dimsecurity"/>
+    </fork>
+
+    <action name="load-master-dimessages-dimcustomer">
+        <hive xmlns="uri:oozie:hive-action:0.5">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <script>${load_master_dimessages_dimcustomer_hive}</script>
+        </hive>
+        <ok to="join3"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="update-master-prospect">
+        <hive xmlns="uri:oozie:hive-action:0.5">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <script>${update_master_prospect_hive}</script>
+        </hive>
+        <ok to="join3"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="transform-load-master-dimaccount">
+        <hive xmlns="uri:oozie:hive-action:0.5">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <script>${transform_load_master_dimaccount_hive}</script>
+        </hive>
+        <ok to="join3"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="transform-load-master-dimsecurity">
+        <hive xmlns="uri:oozie:hive-action:0.5">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <script>${transform_load_master_dimsecurity_hive}</script>
+        </hive>
+        <ok to="join3"/>
+        <error to="fail"/>
+    </action>
+    
+    <join name = "join3" to = "transform-load-master-dimtrade"/>
+
+    <action name="transform-load-master-dimtrade">
+        <hive xmlns="uri:oozie:hive-action:0.5">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <script>${transform_load_master_dimtrade_hive}</script>
+        </hive>
+        <ok to="fork4"/>
+        <error to="fail"/>
+    </action>
+
+    <fork name="fork4">
+        <path start="load-master-dimessages-dimtrade"/>
+        <path start="transform-load-master-financial"/>
+        <path start="transform-load-master-factcashbalances"/>
+        <path start="transform-load-master-factholdings"/>
+        <path start="transform-load-master-factwatches"/>
+        <path start="transform-load-master-factmarkethistory"/>
+    </fork>
+
+
+    <action name="load-master-dimessages-dimtrade">
+        <hive xmlns="uri:oozie:hive-action:0.5">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <script>${load_master_dimessages_dimtrade_hive}</script>
+        </hive>
+        <ok to="join4"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="transform-load-master-financial">
+        <hive xmlns="uri:oozie:hive-action:0.5">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <script>${transform_load_master_financial_hive}</script>
+        </hive>
+        <ok to="join4"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="transform-load-master-factcashbalances">
+        <hive xmlns="uri:oozie:hive-action:0.5">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <script>${transform_load_master_factcashbalances_hive}</script>
+        </hive>
+        <ok to="join4"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="transform-load-master-factholdings">
+        <hive xmlns="uri:oozie:hive-action:0.5">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <script>${transform_load_master_factholdings_hive}</script>
+        </hive>
+        <ok to="join4"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="transform-load-master-factwatches">
+        <hive xmlns="uri:oozie:hive-action:0.5">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <script>${transform_load_master_factwatches_hive}</script>
+        </hive>
+        <ok to="join4"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="transform-load-master-factmarkethistory">
+        <hive xmlns="uri:oozie:hive-action:0.5">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <script>${transform_load_master_factmarkethistory_hive}</script>
+        </hive>
+        <ok to="load_master_dimessages_factmarkethistory"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="load_master_dimessages_factmarkethistory">
+        <hive xmlns="uri:oozie:hive-action:0.5">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <script>${load_master_dimessages_factmarkethistory_hive}</script>
+        </hive>
+        <ok to="join4"/>
+        <error to="fail"/>
+    </action>
+
+    <join name = "join4" to = "finish-historical-load"/>
+
+    <action name="finish-historical-load">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>${finish_historical_load_script}</exec>
+            <capture-output/>
+        </shell>
+        <ok to="end"/>
+        <error to="fail"/>
+    </action>
+
+    <kill name="fail">
+        <message>Workflow failed, error message[${wf:errorMessage(wf:lastErrorNode())}]</message>
+    </kill>
+
+    <end name="end"/>
+</workflow-app>

@@ -1,0 +1,7 @@
+<decision name = "workflow">
+      <switch>
+         <case to = "Create_orc_Table">
+            my name is ${fs:exists('/apps/hive/warehouse/orc_table') eq 'false'} novend and expression2 ${fs:exists('/apps/hive/warehouse/orc_table') eq 'false'}</case>
+         <default to = "Insert_into_Table" />
+      </switch>
+   </decision>

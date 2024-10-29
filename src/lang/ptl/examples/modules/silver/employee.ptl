@@ -1,0 +1,22 @@
+module silver.employee
+
+import employee_model
+
+
+view EmployeeView on Employee
+  attributes
+    employeeId = employeeId::Str
+    name = name::Str 
+    title = title::Str 
+    salary = salary::Str 
+end view
+
+
+view EmployeeDeductions on EmployeeView
+  attributes
+    employeeId = employeeId::Str
+    name = name::Str 
+    title = title::Str 
+    salary = salary::Str 
+  left outer join EmployeeDeductions as s on (s.id == p.supplier_id) 
+end view

@@ -1,0 +1,123 @@
+module minTrans 
+  
+   
+view stg_new_product 
+(view _ on Product as p
+      attributes
+      product_id = p.id
+ p.product_code
+ p.product_name
+ p.description
+ supplier_company = s.company
+ p.standard_cost
+ p.list_price
+ p.reorder_level
+ p.target_level
+ p.quantity_per_unit
+ p.discontinued
+ p.minimum_reorder_quantity
+ p.category
+ p.attachments
+ insertion_timestamp = currentTimeStamp()
+       left outer join Supplier  as s 
+  on (s.id = p.supplier_id)
+ end view)
+end view
+ 
+@partitionedBy( order_date Date ) 
+
+
+
+
+
+
+
+ 
+@ifNotExists
+
+entity fact_sales {
+      order_id :Int 
+product_id :Int 
+customer_id :Int 
+employee_id :Int 
+shipper_id :Int 
+quantity :Int 
+unit_price :Float 
+discount :Float 
+status_id :Int 
+date_allocated :Date 
+purchase_order_id :Int 
+inventory_id :Int 
+order_date :Date 
+shipped_date :Date 
+paid_date :Date 
+insertion_timestamp :Datetime 
+     }
+ 
+
+@update 
+transform dim_product   with dim_product as existing
+attributes
+product_id = if new.product_id is not null  then new.product_id else existing.product_id
+product_code = if new.product_code is not null  then new.product_code else existing.product_code
+product_name = if new.product_name is not null  then new.product_name else existing.product_name
+description = if new.description is not null  then new.description else existing.description
+supplier_company = if new.supplier_company is not null  then new.supplier_company else existing.supplier_company
+standard_cost = if new.standard_cost is not null  then new.standard_cost else existing.standard_cost
+list_price = if new.list_price is not null  then new.list_price else existing.list_price
+reorder_level = if new.reorder_level is not null  then new.reorder_level else existing.reorder_level
+target_level = if new.target_level is not null  then new.target_level else existing.target_level
+quantity_per_unit = if new.quantity_per_unit is not null  then new.quantity_per_unit else existing.quantity_per_unit
+discontinued = if new.discontinued is not null  then new.discontinued else existing.discontinued
+minimum_reorder_quantity = if new.minimum_reorder_quantity is not null  then new.minimum_reorder_quantity else existing.minimum_reorder_quantity
+category = if new.category is not null  then new.category else existing.category
+attachments = if new.attachments is not null  then new.attachments else existing.attachments
+insertion_timestamp = if new.insertion_timestamp is not null  then new.insertion_timestamp else existing.insertion_timestamp
+
+
+filter
+existing.product_id is null or (new.row_number = 1)
+
+
+        
+full outer join stg_new_product  as new 
+ on (existing.product_id = new.product_id)
+        end transform
+        
+ 
+
+ 
+@ifNotExists
+
+         entity dim_product extends stg_new_product {
+          
+  }
+ 
+@ifNotExistsview date_dimension on 
+ (view _ on 
+     attributes
+     d = explode(split(space(dateDiff('2050-01-01',
+'2014-01-01')),
+' ')) + '2014-01-01'
+      end view) as date_array 
+   attributes
+       id = date_format(d,
+       'yyyy-MM-dd')
+       full_date = d
+       year = year(d)
+       week_start_date = fromUnixTimeOneParam((unixTimestampOneParam(d) - (86400 * (date_format(d,
+       'u') - 1))))
+       week_day = date_format(d,
+       'u')
+       day_name = date_format(d,
+       'EEEE')
+       day_is_weekday = if date_format(d,
+       'u') in [6,7]  then 0 else 1
+       month = date_format(d,
+       'MM')
+       month_name = date_format(d,
+       'MMMM')
+       fiscal_qtr = date_format(d,
+       'Q')
+       fiscal_year = year(d) 
+end view

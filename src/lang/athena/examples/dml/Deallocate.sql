@@ -1,0 +1,1 @@
+DEALLOCATE PREPARE my_select1;

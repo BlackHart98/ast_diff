@@ -1,0 +1,1 @@
+CREATE TABLE  Dim_product LIKE Stg_new_product;

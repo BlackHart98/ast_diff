@@ -1,0 +1,3 @@
+DROP DATABASE clickstreams;
+
+DROP SCHEMA IF EXISTS clickstreams CASCADE;

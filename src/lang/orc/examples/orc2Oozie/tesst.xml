@@ -1,0 +1,59 @@
+<workflow-app name="flow1" xmlns="uri:oozie:workflow:0.4">
+    <start to="startHistoricalLoad"/>
+
+    <action name="createStagingSchema">
+        <hive xmlns="uri:oozie:hive-action:0.4">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <file>${create_staging_schema_hive}</file>
+        </hive>
+        <ok to="load_order_detail_daily"/>
+        <error to="fail"/>
+    </action>
+    <fork name="fork1">
+        <path start="transformation"/>
+    </fork>
+
+    <action name="create-master-schema">
+        <hive xmlns="uri:oozie:hive-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <job-xml>hive-site.xml</job-xml>
+            <script>${create_master_schema_hive}</script>
+        </hive>
+        <ok to="join1"/>
+        <error to="fail"/>
+    </action>
+
+    <join name="join1" to="fork2">
+    
+    </join>
+
+
+    <!-- <action name="importTradeTable">
+        <sqoop xmlns="uri:oozie:sqoop-action:0.4">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <command>import --connect jdbc:mysql://localhost/trade --table ${trade_table} --target-dir /user/hdfs/trade_table</command>
+            <file>${trade_table}#trade_table.par</file>
+        </sqoop>
+        <ok to="date-dim"/>
+        <error to="kill"/>
+    </action>
+    <action name="startHistoricalLoad">
+    <shell xmlns="uri:oozie:shell-action:0.4">
+        <job-tracker>${jobTracker}</job-tracker>
+        <name-node>${nameNode}</name-node>
+        <exec>${start_historical_load_script}#start_historical_load.sh</exec>
+    </shell>
+    <ok to="end"/>
+    <error to="fail"/>
+    </action> -->
+
+
+
+    <kill name="fail">
+        <message>Workflow failed, error message[${Dataflow:errorMessage(Dataflow:lastErrorNode())}]</message>
+    </kill>
+    <end name="end"/>
+</workflow-app>

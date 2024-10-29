@@ -1,0 +1,49 @@
+module accounting
+
+entity Bank 
+  name : Str (required, size[90], masked, redacted)
+  // address : Int = "6" as [Int] 
+  email : Str 
+  customers : Set[Str] = set{"John","Paul","Emmanuel"}
+  customer : Str = customers{1}
+  acct : Str = accts.get(email)
+  accts : Map[Str, Str] = {"John" -> "09988", "Peter" -> "98499"}
+  number : Str = (accts) match {
+     case {name -> "09988", "Peter" -> "98499"} => name;
+     case {"John" -> "acctNumber", "Peter" -> "98499"} => "acctNumber";
+     default => "";
+    }
+end entity
+
+entity Account 
+  name : Str 
+  address : Str   
+  accts : Map[Str, Map[Str, Str]] = {"John" -> {"John" -> "09988", "Peter" -> "98499"}, 
+                                     "Peter" -> {"John" -> "09988", "Peter" -> "98499"}
+                                    }
+end entity
+
+entity Customer 
+  name : Str
+  surname : Str   
+  customerId : Str 
+  gender : Gender
+  age : Str = (7) match {
+     case 4 => "";
+     case 8 => "";
+     case 5 => "";
+     default => "";
+    }
+end entity
+
+enum Gender 
+  Male,
+  Female,
+  NonBinary,
+end enum
+
+enum Size 
+  S,
+  L,
+  XL,
+end enum

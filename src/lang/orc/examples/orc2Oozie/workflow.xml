@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workflow-app xmlns="uri:oozie:workflow:1.0" name="test_workflow">
+  <start to="loanActivity" />
+  <action xmlns="" name="loanActivity">
+    <hive xmlns="uri:oozie:hive-action:1.0">
+      <job-tracker>"${jobTracker}"</job-tracker>
+      <name-node>"${nameNode}"</name-node>
+      <configuration>
+        <property>
+          <name>"mapred.job.queue.name"</name>
+          <value>"${queueName}"</value>
+        </property>
+        <property>
+          <name>"mapred.reduce.tasks"</name>
+          <value>"${queueName}"</value>
+        </property>
+      </configuration>
+      <script>${applicationPath}/hql-scripts/base_loan_activity.sql</script>
+    </hive>
+    <ok to="end" />
+    <error to="errorCleanup" />
+  </action>
+  <kill name="errorCleanup">
+    <message xmlns="">"Monthly common table loader failed, error message[${wf:errorMessage(wf:lastErrorNode())}]"</message>
+  </kill>
+  <end name="end" />
+</workflow-app>

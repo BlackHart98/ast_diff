@@ -1,0 +1,32 @@
+module desugar
+
+view EmployeeDeductionsView on Employee
+    attributes
+        *
+end view
+
+-- or
+
+view EmployeeDeductionsView on Employee as e
+    attributes
+        e.*
+end view
+
+
+
+
+-- then for derived fields
+view EmployeeDeductionsView on Employee
+    attributes
+        firstName
+end view
+
+-- or
+
+view EmployeeDeductionsView on Employee as e
+    attributes
+        e.firstName
+end view
+
+
+

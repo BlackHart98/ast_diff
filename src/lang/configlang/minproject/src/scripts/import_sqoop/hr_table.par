@@ -1,0 +1,17 @@
+--connect
+jdbc:postgresql://database:5432/postgres?currentSchema=temp_db 
+--table
+hr 
+--username
+postgres 
+--password
+passw0rd 
+--num-mappers
+1 
+--hive-import 
+--hive-table
+staging.hr 
+--map-column-hive
+employeeid=STRING,managerid=STRING,employeefirstname=STRING,employeelastname=STRING,employeemi=STRING,employeejobcode=INT,employeebranch=STRING,employeeoffice=STRING,employeephone=STRING 
+--target-dir
+/user/sqoop/hr

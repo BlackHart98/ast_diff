@@ -1,0 +1,1 @@
+DELETE FROM iceberg_table WHERE category='c3';

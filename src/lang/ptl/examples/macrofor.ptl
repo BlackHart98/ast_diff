@@ -1,0 +1,24 @@
+module macrofor
+
+
+defmacro createDim(y)
+    entity #{y}
+        acctname : String
+        owner : String
+        category : String 
+        validat : String
+        expiredat : String
+    end entity
+end defmacro
+
+
+{% let x = [ "Account", "User", "Sales", "Inventory" ] %}
+
+
+{% for i in x %} {
+    createDim!(i)
+}
+
+
+
+{% let a = [ 2, 3, 4] %}

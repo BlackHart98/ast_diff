@@ -1,0 +1,23 @@
+module Spark
+
+view Stg_new_product 
+ (view _ on Product as p
+ attributes
+ product_id =  p.id
+ p.product_code 
+ p.product_name 
+ p.description 
+supplier_company = s.company 
+ p.standard_cost 
+ p.list_price 
+ p.reorder_level 
+ p.target_level 
+ p.quantity_per_unit 
+ p.discontinued 
+ p.minimum_reorder_quantity 
+ p.category 
+ p.attachments 
+ insertion_timestamp = current_timestamp()
+ left outer join Supplier as s on (s.id == p.supplier_id) 
+ end view)
+end view

@@ -1,0 +1,1349 @@
+module std
+@scalar
+func exp(expr:Float) -> Float
+
+@platform{"hive", "spark", "azure", "snowflake", "databricks"}
+func current_timestamp() -> DateTime
+
+@platform{"hive", "spark", "databricks"}
+func date_format(datetime_value:Str, format:Str)-> Str
+
+@platform{"hive", "spark", "databricks"}
+func date_format(expr:Date, format:Str)-> Str
+
+@platform{"hive", "spark", "databricks"}
+func date_format(expr:Timestamp, format:Str)-> Str
+
+@platform{"hive", "spark", "azure", "snowflake", "databricks"}
+func year(expr:Str)-> Int
+
+@platform{"redshift"}
+@alias{"year"}
+func date_part_year() -> Int
+
+@platform{"hive", "spark", "databricks"}
+func unix_timestamp(expr:Str, format:Str)-> Str
+
+@platform{"hive", "spark", "databricks"}
+func from_unixtime(unix_time:Int, format:Str)-> Str
+
+@platform{"redshift", "spark", "snowflake", "databricks"}
+func any_value(expr:&T, distinct=true, ignore_null=true)-> &T
+
+@platform{"redshift", "spark", "azure", "snowflake", "databricks"}
+func approx_count_distinct(expr:Int, distinct=true)-> Int
+
+@platform{"hive"}
+@alias{"approx_percentile"}
+func percentile_approx(column:Float, percentile_fraction:Float, distinct=true)-> Float
+
+@platform{"redshift","azure"}
+@alias{"approx_percentile"}
+func approximate_percentile_disc(column:Float, percentile_fraction:Float, distinct=true)-> Float
+
+@platform{"spark", "databricks","snowflake"} 
+func approx_percentile(column:Float, percentile_fraction:Float, distinct=true)-> Float
+
+@platform{"hive"}
+@alias{"approx_percentile"}
+func percentile_approx(column:List[Float], percentile_fraction:Float, distinct=true)-> List[Float]
+
+@platform{"redshift","azure"}
+@alias{"approx_percentile"}
+func approximate_percentile_disc(column:List[Float], percentile_fraction:Float, distinct=true)-> List[Float]
+
+@platform{"spark", "databricks","snowflake"} 
+func approx_percentile(column:List[Float], percentile_fraction:Float, distinct=true)-> List[Float]
+
+@platform{ "spark", "snowflake", "databricks"}
+func array_agg(column:&T, distinct=true)-> List[&T]
+
+@platform{"hive"}
+@alias{"array_agg"}
+func array(expr:&T, distinct=true)-> List[&T]
+
+func avg(expr:Int, distinct=true)-> Float
+
+@platform{"redshift", "spark", "databricks"}
+func bit_and(expr:Int, distinct=true)-> Int
+
+@platform{"snowflake"}
+@alias{"bit_and"}
+func bitand_agg(expr:Int, distinct=true)-> Int
+
+@platform{"redshift", "spark",  "databricks"}
+func bit_or(expr:Int, distinct=true)-> Int
+
+@platform{ "snowflake"}
+@alias{"bit_or"}
+func bitor_agg(expr:Int, distinct=true)-> Int
+
+@platform{"spark", "databricks"}
+func bit_xor(expr:Int, distinct=true)-> Int
+
+@platform{"snowflake"}
+@alias{"bit_xor"}
+func bitxor_agg(expr:Int, distinct=true)-> Int
+
+@platform{"redshift", "spark", "databricks"}
+func bool_and(expr:Bool, distinct=true)-> Bool
+
+@platform{"snowflake"}
+@alias{"bool_and"}
+func booland_agg(expr:Bool, distinct=true)-> Bool
+
+@platform{"snowflake"}
+@alias{"bool_or"}
+func boolor_agg(expr:Bool, distinct=true)-> Bool
+
+@platform{"redshift", "spark", "databricks"}
+func bool_or(expr:Bool, distinct=true)-> Bool
+
+@platform{"hive", "spark", "databricks"}
+func collect_list(expr:&T, distinct=true)-> List[&T]
+
+@platform{"hive", "spark", "databricks"}
+func collect_set(expr_excluding_map:&T)-> List[&T]
+
+@platform{"hive", "spark", "databricks"}
+func corr(expr:Int, expr2:Int, distinct=true)-> Float
+
+func count(distinct=true)-> Int
+
+@platform{"hive", "redshift", "spark", "azure", "snowflake"}
+func count(expr:&T, distinct=true)-> Int
+
+@platform{"spark", "snowflake", "databricks"}
+func count_if(expr:Bool, distinct=true)-> Int
+
+@platform{"hive", "spark", "snowflake", "databricks"}
+func covar_pop(expr:Int, expr2:Int, distinct=true)-> Float
+
+@platform{"hive", "spark", "snowflake", "databricks"}
+func covar_samp(expr:Int, expr2:Int, distinct=true)-> Float
+
+@platform{"hive", "spark"}
+func histogram_numeric(expr:Int, num_of_bins:Int)-> List[Struct[x Float, y Float]]
+
+func max(sortable_expr:&T, distinct=true)-> &T
+
+@platform{"spark", "snowflake", "databricks"}
+func max_by(expr:&T, sortable_expr:List[Int])-> Int
+
+@platform{"redshift", "spark", "snowflake", "databricks"}
+func median(expr:Int, distinct=true)-> Int
+
+@platform{"hive", "redshift", "spark", "snowflake", "databricks"}
+func min(sortable_expr:&T, distinct=true)-> &T
+
+@platform{"spark", "snowflake", "databricks"}
+func min_by(expr:&T, expr2:&T)-> &T
+
+@platform{"spark", "snowflake", "databricks"}
+func mode(comparable_expr:&T)-> &T
+
+@platform{"hive", "spark", "databricks"}
+func percentile(expr:Int, percentage:Int, distinct=true)-> Float
+
+@platform{"hive", "spark"}
+func percentile(expr:Int, percentage:List[Float])-> List[Float]
+
+@platform{"hive", "spark", "databricks"}
+func percentile_approx(expr:Float, percentile:Float, distinct=true)-> Float
+
+@platform{"hive", "spark", "databricks"}
+func percentile_approx(expr:Float, percentile:List[Float], distinct=true)-> List[Float]
+
+@platform{"hive", "spark", "snowflake", "databricks"}
+func regr_avgx(dependent_var:Float, independent_var:Int, distinct=true)-> Float
+
+@platform{"hive", "spark", "snowflake", "databricks"}
+func regr_avgy(dependent_var:Int, independent_var:Int, distinct=true)-> Float
+
+@platform{"hive", "spark", "snowflake", "databricks"}
+func regr_count(dependent_var:Int, independent_var:Int, distinct=true)-> Int
+
+@platform{"hive", "spark", "snowflake", "databricks"}
+func regr_intercept(dependent_var:Int, independent_var:Int, distinct=true)-> Float
+
+@platform{"hive", "spark", "snowflake", "databricks"}
+func regr_r2(dependent_var:Int, independent_var:Int, distinct=true)-> Float
+
+@platform{"hive", "spark", "snowflake", "databricks"}
+func regr_slope(dependent_var:Int, independent_var:Int, distinct=true)-> Float
+
+@platform{"hive", "spark", "snowflake", "databricks"}
+func regr_sxx(dependent_var:Int, independent_var:Int, distinct=true)-> Float
+
+@platform{"hive", "spark", "snowflake", "databricks"}
+func regr_sxy(dependent_var:Int, independent_var:Int, distinct=true)-> Float
+
+@platform{"hive", "spark", "snowflake", "databricks"}
+func regr_syy(dependent_var:Int, independent_var:Int, distinct=true)-> Float
+
+@platform{"spark", "snowflake", "databricks"}
+func skewness(expr:Int, distinct=true)-> Float
+
+@platform{"snowflake"}
+@alias{"skewness"}
+func skew(expr:Int, distinct=true)-> Float
+
+@platform{"snowflake"}
+func stddev(expr:Int, distinct=true)-> Float
+
+@platform{"hive", "redshift", "spark"}
+@alias{"stddev"}
+func stddev_samp(expr:Int, distinct=true)-> Float
+
+@platform{"azure"}
+@alias{"stddev"}
+func stdev(expr:Int, distinct=true)-> Float
+
+@platform{"databricks"}
+@alias{"stddev"}
+func std(expr:Int, distinct=true)-> Float
+
+@platform{"hive", "redshift", "spark", "snowflake", "databricks"}
+func stddev_pop(expr:Int, distinct=true)-> Float
+
+@platform{"azure"}
+@alias{"stddev_pop"}
+func stdevp(expr:Int, distinct=true)-> Float
+
+func sum(expr:Int, distinct=true)-> Float
+
+@platform{"hive", "redshift", "spark", "databricks"}
+func var_pop(expr:Int, distinct=true)-> Float
+
+@platform{"snowflake"}
+@alias{"var_pop"}
+func variance_pop(expr:Int, distinct=true)-> Float
+
+@platform{"azure"}
+@alias{"var_pop"}
+func varp(expr:Int, distinct=true)-> Float
+
+@platform{"snowflake"}
+func variance(expr:Int, distinct=true)-> Float
+
+@platform{"hive", "redshift", "spark", "databricks"}
+@alias{"variance"}
+func var_samp(expr:Int, distinct=true)-> Float
+
+@platform{"azure"}
+@alias{"variance"}
+func var(expr:Int, distinct=true)-> Float
+
+@platform{"hive", "spark", "azure", "snowflake"}
+func ntile(positive_num_of_buckets:Int)-> Int
+
+@platform{"redshift", "snowflake"}
+func listagg(expr:Str, distinct=true) -> Str
+
+@platform{"spark", "databricks"}
+func any(expr:Bool)-> Bool
+
+@platform{"snowflake", "databricks"}
+func bitmap_construct_agg(bit_position:Int)-> SmallInt
+
+@platform{"snowflake", "databricks"}
+func bitmap_or_agg(bitmap:SmallInt)-> SmallInt
+
+@platform{"spark", "databricks"}
+func count_min_sketch(column:Int, epsilon:Float, confidence:Float, seed:Int)-> SmallInt
+
+@platform{"spark", "databricks"}
+func count_min_sketch(column:Str, epsilon:Float, confidence:Float, seed:Int)-> SmallInt
+
+@platform{"spark", "databricks"}
+func count_min_sketch(column:SmallInt, epsilon:Float, confidence:Float, seed:Int, distinct=true)-> SmallInt
+
+@platform{"spark", "databricks"}
+func every(expr:Bool)-> Bool
+
+@platform{"spark", "databricks"}
+func first(expr:&T, ignore_null=true)-> &T
+
+@platform{"spark", "databricks"}
+func hll_sketch_agg(expr:Int)-> SmallInt
+
+@platform{"spark", "databricks"}
+func hll_sketch_agg(expr:SmallInt)-> SmallInt
+
+@platform{"spark", "databricks"}
+func hll_sketch_agg(expr:Str)-> SmallInt
+
+@platform{"spark", "databricks"}
+func kurtosis(expr:Int, distinct=true)-> Float
+
+@platform{"spark", "databricks"}
+func last(expr:&T, ignore_null=true)-> &T
+
+@platform{"spark", "azure", "databricks"}
+func last_value(expr:&T, ignore_null=true)-> &T
+
+@platform{"spark", "databricks"}
+func first_value(expr:&T, ignore_null=true)-> &T
+
+@platform{"spark", "databricks"}
+func mean(expr:Int, distinct=true)-> Float
+
+@platform{"spark", "databricks"}
+func mean(expr:Interval, distinct=true)-> Interval 
+
+@platform{"redshift", "azure", "snowflake", "databricks"}
+func percentile_cont(percentile:Float)-> Float
+
+@platform{"redshift", "azure", "snowflake", "databricks"}
+func percentile_cont(percentile:List[Float])-> List[Float]
+
+@platform{"snowflake", "databricks"}
+func percentile_disc(percentile:Float)-> Float
+
+@platform{"snowflake", "databricks"}
+func percentile_disc(percentile:List[Float])-> List[Float]
+
+@platform{"spark", "databricks"}
+func some(expr:Bool)-> Bool
+
+@platform{"spark", "databricks"}
+func try_avg(expr:Int, distinct=true)-> Float
+
+@platform{"spark", "databricks"}
+func try_sum(expr:&T, distinct=true)-> &T
+
+@platform{"spark", "databricks"}
+func bit_count(expr:Int)-> Int 
+
+@platform{"spark", "databricks"}
+func bit_count(expr:Bool)-> Int 
+
+@platform{"spark", "databricks"}
+func bit_get(expr:Int, position:Int)-> Int 
+
+@platform{"snowflake", "databricks"}
+func bitmap_count(expr:SmallInt)-> Int
+
+@platform{"snowflake", "databricks"}
+func bitmap_bucket_number(expr:Int)-> Int
+
+@platform{"snowflake", "databricks"}
+func bitmap_bit_position(expr:Int)-> Int
+
+@platform{"azure", "databricks"}
+func grouping(grouping_column:&T)-> Int
+
+@platform{"azure", "databricks"}
+func grouping_id(grouping_col:&T)-> Int
+
+@platform{"hive", "spark"}
+func binary(expr:Str, format:Str)-> SmallInt
+
+@platform{"snowflake", "databricks"}
+@alias{"binary"}
+func to_binary(expr:Str, format:Str)-> SmallInt
+
+@platform{"hive"}
+func binary(expr:SmallInt)-> SmallInt
+
+@platform{"hive"}
+func binary(expr:Str)-> SmallInt
+
+@platform{"redshift", "databricks", "snowflake"}
+func to_date(expr:Str, format:Str)-> Date
+
+@platform{"spark"}
+@alias{"to_date"}
+func date(expr:Str)-> Date
+
+@platform{"redshift", "spark", "snowflake", "databricks"}
+func to_number(expr:Str, format:Str)-> Int
+
+@platform{"spark", "databricks"}
+func decimal(expr:Float)-> Float
+
+@platform{"snowflake"}
+@alias{"decimal"}
+func to_decimal(expr:Float)-> Float
+
+@platform{"redshift", "snowflake"}
+func to_char(expr:Int, format:Str)-> Str
+
+@platform{"redshift", "snowflake"}
+func to_char(expr:Timestamp, format:Str)-> Str
+
+@platform{"spark", "databricks"}
+func boolean(expr:Bool)-> Bool
+
+@platform{"snowflake"}
+@alias{"boolean"}
+func to_boolean(expr:Bool)-> Bool
+
+@platform{"spark", "databricks"}
+func double(expr:Float)-> Float
+
+@platform{"snowflake"}
+@alias{"double"}
+func to_double(expr:Float)-> Float
+
+@platform{"spark"}
+func timestamp(expr:Timestamp)-> Timestamp
+
+@platform{"snowflake", "databricks"}
+@alias{"timestamp"}
+func to_timestamp(timestamp_string:Str)-> Timestamp
+
+@platform{"spark", "databricks"}
+func float(expr:Float)-> Float
+
+@platform{"spark", "databricks"}
+func int(expr:Int)-> Int
+
+@platform{"spark", "databricks"}
+func smallint(expr:Int)-> Int
+
+@platform{"spark", "databricks"}
+func string(expr:&T)-> Str
+
+@platform{"spark", "databricks"}
+func tinyint(expr:&T)-> Int
+
+@platform{"snowflake", "databricks"}
+func to_varchar(expr:&T)-> Str
+
+@platform{"azure", "snowflake", "databricks"}
+func cume_dist() -> Float
+
+@platform{"azure", "spark", "snowflake", "databricks"}
+func lag(expr:&T, ignore_null=true)-> &T
+
+@platform{"azure", "spark", "snowflake", "databricks"}
+func percent_rank() -> Float
+
+@platform{"azure", "spark", "snowflake", "databricks"}
+func rank() -> Int
+
+@platform{"azure", "spark", "snowflake", "databricks"}
+func row_number() -> Int
+
+@platform{"spark", "snowflake", "databricks"}
+func nth_value(expr:&T, offset:Int, ignore_null=true) -> &T
+
+@platform{"hive", "spark", "azure", "snowflake", "databricks"}
+func year(timestamp_string:Str)-> Int
+
+@platform{"hive", "spark", "azure", "snowflake", "databricks"}
+func year(expr:Date)-> Int
+
+@platform{"hive", "spark", "azure", "snowflake", "databricks"}
+func year(expr:Timestamp)-> Int
+
+@platform{"redshift"}
+@alias{"year"}
+func date_part_year(expr:Date)-> Int
+
+@platform{"hive", "spark", "snowflake", "databricks"}
+func quarter(expr:Date)-> Int
+
+@platform{"hive", "spark", "snowflake", "databricks"}
+func quarter(expr:Timestamp)-> Int
+
+@platform{"hive", "spark", "azure", "snowflake", "databricks"}
+func month(timestamp_string:Str)-> Int
+
+@platform{"hive", "spark", "azure", "snowflake", "databricks"}
+func month(expr:Timestamp)-> Int
+
+@platform{"hive", "spark", "azure", "snowflake", "databricks"}
+func day(expr:Date)-> Int
+
+@platform{"hive", "spark", "azure", "snowflake","databricks"}
+func day(expr:Timestamp)-> Int
+
+@platform{"hive", "spark", "snowflake", "databricks"}
+func hour(expr:Timestamp)-> Int
+
+@platform{"hive", "spark", "snowflake"}
+func minute(expr:Timestamp)-> Int
+
+@platform{"hive", "spark", "snowflake", "databricks"}
+func second(expr:Timestamp)-> Int
+
+@platform{"hive", "spark", "databricks"}
+func weekofyear(expr:Date)-> Int
+
+@platform{"hive", "redshift", "spark", "snowflake", "databricks"}
+func extract()-> Int
+
+func datediff(end_date:Date, start_date:Date)-> Int
+
+@platform{"hive", "spark", "databricks"}
+func date_add(start_date:Date, num_of_days:Int)-> Date
+
+@platform{"redshift", "azure", "snowflake"}
+@alias{"date_add"}
+func dateadd(datepart:Str, interval:Int, base_date:Date)-> Date
+
+@platform{"redshift", "azure", "snowflake"}
+@alias{"date_add"}
+func dateadd(datepart:Str, interval:Int, base_datetime:Datetime)-> DateTime
+
+@platform{"redshift", "azure", "snowflake"}
+@alias{"date_add"}
+func dateadd(datepart:Str, interval:Int, base_timestamp:Timestamp)-> Timestamp
+
+@platform{"hive", "spark", "databricks"}
+func date_sub(start_date:Date, num_of_days:Int)-> Date
+
+@platform{"hive", "spark", "databricks"}
+func from_utc_timestamp(expr:Timestamp, timezone:Str)-> Timestamp
+
+@platform{"hive", "spark", "databricks"}
+func to_utc_timestamp(expr:Timestamp, timezone:Str)-> Timestamp
+
+@platform{"hive", "redshift", "spark", "snowflake", "databricks"}
+func current_date()-> Date
+
+@platform{"hive", "spark", "azure", "snowflake", "databricks"}
+func current_timestamp()-> Timestamp
+
+@platform{"hive", "spark", "azure", "snowflake", "databricks"}
+func add_months(start_date:Date, num_of_months:Int)-> Date
+
+@platform{"hive", "redshift", "spark", "snowflake", "databricks"}
+func last_day(expr:Date)-> Date
+
+@platform{"hive", "redshift", "spark", "snowflake", "databricks"}
+func next_day(expr:Date, date_of_week:Str)-> Date
+
+@platform{"hive", "redshift", "spark", "snowflake", "databricks"}
+func trunc(expr:Date, format:Str)-> Date
+
+@platform{"redshift", "spark", "azure", "snowflake", "databricks"}
+func date_trunc(unit:Str, expr:Date)-> Timestamp
+
+@platform{"redshift", "spark", "azure", "snowflake", "databricks"}
+func date_trunc(unit:Str, expr:Timestamp)-> Timestamp
+
+@platform{"redshift", "spark", "azure", "snowflake", "databricks"}
+func date_trunc(unit:Str, timestamp_string:Str)-> Timestamp
+
+@platform{"hive", "redshift", "spark", "snowflake", "databricks"}
+func months_between(expr:Date, comparison_expr:Date)-> Float
+
+@platform{"hive", "spark", "databricks"}
+func date_format(expr:Date, format:Str)-> Str
+
+@platform{"hive", "spark", "databricks"}
+func date_format(expr:Timestamp, format:Str)-> Str
+
+@platform{"hive", "spark", "databricks"}
+func date_format(expr:Str, format:Str)-> Str
+
+@platform{"redshift", "spark", "databricks"}
+func convert_timezone(target_timezone:Str, source_timestamp:Date)-> Timestamp
+
+@platform{"redshift", "spark", "databricks"}
+func convert_timezone(target_timezone:Str, source_timestamp:Timestamp)-> Timestamp
+
+@platform{"redshift", "spark", "databricks"}
+func convert_timezone(target_timezone:Str, source_timestamp:Interval)-> Timestamp
+
+@platform{"redshift", "spark", "snowflake", "databricks"}
+func date_part(datepart:Str, expr:Date)-> Int
+
+@platform{"redshift", "spark", "snowflake", "databricks"}
+func date_part(datepart:Str, expr:Timestamp)-> Int
+
+@platform{"redshift", "azure", "snowflake"}
+func sysdate()-> Timestamp
+
+@platform{"azure"}
+@alias{"sysdate"}
+func sysdatetime()-> Timestamp
+
+@platform{"spark", "snowflake"}
+func localtimestamp()-> Timestamp
+
+@platform{"spark", "databricks"}
+func curdate()-> Date
+
+@platform{"spark", "databricks"}
+func date_from_unix_date(days:Int)-> Date
+
+@platform{"spark", "databricks"}
+func make_date(year:Int, month:Int, day:Int)-> Date
+
+@platform{"spark", "databricks"}
+func make_dt_interval(year:Int, month:Int, day:Int)-> Interval
+
+@platform{"spark", "databricks"}
+func make_interval(years:Int, months:Int)-> Interval
+
+@platform{"spark", "databricks"}
+func make_timestamp(year:Int, month:Int, day:Int, hour:Int, min:Int, sec:Int)-> Timestamp
+
+@platform{"spark", "databricks"}
+func make_ym_interval(years:Int, months:Int)-> Interval
+
+@platform{"spark", "databricks"}
+func now()-> Timestamp
+
+@platform{"spark", "databricks"}
+func session_window(expr:Timestamp, gap_duration:Str)-> Struct[x Timestamp, y Timestamp]
+
+@platform{"spark", "databricks"}
+func timestamp_micros(microseconds:Int)-> Timestamp
+
+@platform{"spark", "databricks"}
+func timestamp_millis(milliseconds:Int)-> Timestamp
+
+@platform{"spark", "databricks"}
+func timestamp_seconds(seconds:Int)-> Timestamp
+
+@platform{"spark", "databricks"}
+func to_unix_timestamp(timestamp_string:Str)-> Int
+
+@platform{"spark", "databricks"}
+func to_utc_timestamp(expr:Timestamp, timezone:Str)-> Timestamp
+
+@platform{"spark", "databricks"}
+func try_to_timestamp(timestamp_string:Str)-> Timestamp
+
+@platform{"spark", "databricks"}
+func unix_micros(expr:Timestamp)-> Int
+
+@platform{"spark", "databricks"}
+func unix_millis(expr:Timestamp)-> Int
+
+@platform{"spark", "databricks"}
+func unix_seconds(expr:Timestamp)-> Int
+
+@platform{"spark", "databricks"}
+func weekday(expr:Date)-> Int
+
+@platform{"spark", "databricks"}
+func weekday(expr:Timestamp)-> Int
+
+@platform{"spark", "databricks"}
+func window(expr:Timestamp, window_duration:Str)-> Struct[x Timestamp, y Timestamp]
+
+@platform{"spark", "databricks"}
+func window_time(window:Struct[x Timestamp, y Timestamp])-> Timestamp
+
+@platform{"azure", "databricks"}
+func getdate()-> Timestamp
+
+@platform{"hive", "redshift", "spark", "databricks"}
+func array(expr:&T)-> List[&T]
+
+@platform{"snowflake"}
+@alias{"array"}
+func array_construct(expr:&T)-> List[&T]
+
+@platform{"spark", "snowflake", "databricks"}
+func array_append(array:List[&T], element_to_append:T)-> List[&T]
+
+@platform{"spark", "snowflake", "databricks"}
+func array_compact(array:List[&T])-> List[&T]
+
+@platform{"spark", "snowflake", "databricks"}
+func array_contains(array:List[&T], element_to_find:&T)-> Bool
+
+@platform{"hive", "spark", "snowflake", "databricks"}
+func array_distinct(array:List[&T])-> List[&T]
+
+@platform{"hive", "spark", "snowflake", "databricks"}
+func array_except(array1:List[&T], array2:List[&T])-> List[&T]
+
+@platform{"spark", "snowflake", "databricks"}
+func array_insert(array:List[&T], non_negative_index:Int, element_to_insert:&T)-> List[&T]
+
+@platform{"snowflake"}
+func array_intersection(array1:List[&T], array2:List[&T])-> List[&T]
+
+@platform{"hive", "spark", "databricks"}
+@alias{"array_intersection"}
+func array_intersect(array1:List[&T], array2:List[&T])-> List[&T]
+
+@platform{"hive", "spark", "databricks"}
+func array_join(array:List[&T], seperator:Str)-> Str
+
+@platform{"hive", "spark", "snowflake"}
+func array_max(array:List[&T])-> Int
+
+@platform{"hive", "spark", "snowflake", "databricks"}
+func array_min(array:List[&T])-> Int
+
+@platform{"spark", "snowflake", "databricks"}
+func array_position(array:List[&T], target_element:&T)-> Int
+
+@platform{"spark", "snowflake", "databricks"}
+func array_prepend(array:List[&T], element_to_prepend:&T)-> List[&T]
+
+@platform{"hive", "spark", "snowflake", "databricks"}
+func array_remove(array:List[&T], element_to_remove:&T)-> List[&T]
+
+@platform{"hive", "spark", "databricks"}
+func array_union(array1:List[&T], array2:List[&T])-> List[&T]
+
+@platform{"snowflake"}
+@alias{"array_union"}
+func array_union_agg(column:List[&T])-> List[&T]
+
+@platform{"spark", "snowflake", "databricks"}
+func arrays_overlap(array1:List[&T], array2:List[&T])-> Bool
+
+@platform{"redshift", "snowflake"}
+func array_flatten(array:List[List[&T]])-> List[&T]
+
+@platform{"spark"}
+@alias{"array_flatten"}
+func flatten(array:List[List[&T]])-> List[&T]
+
+@platform{"spark", "snowflake"}
+func get(array:List[&T], index:Int)-> &T
+
+@platform{"snowflake"}
+func array_slice(array:List[&T], start_index:Int, end_index:Int)-> List[&T]
+
+@platform{"spark"}
+@alias{"array_slice"}
+func slice(array:List[&T], start_index:Int, slice_length:Int)-> List[&T]
+
+@platform{"hive", "spark"}
+func sort_array(array:List[&T])-> List[&T]
+
+@platform{"snowflake", "databricks"}
+@alias{"sort_array"}
+func array_sort(array:List[&T])-> List[&T]
+
+@platform{"snowflake", "databricks"}
+func array_size(array:List[&T])-> Int
+
+@platform{"hive"}
+@alias{"array_size"}
+func size(array:List[&T])-> Int
+
+@platform{"redshift"}
+@alias{"array_size"}
+func get_array_length(array_expr:List[&T])-> Int
+
+@platform{"snowflake"}
+func array_cat(array1:List[&T], array2:List[&T])-> List[&T]
+
+@platform{"redshift"}
+@alias{"array_cat"}
+func array_concat(array1:List[&T], array2:List[&T])-> List[&T]
+
+@platform{"spark", "databricks"}
+func array_repeat(expr:&T, repeat_count:Int)-> List[&T]
+
+// accepts any number of arguments
+@platform{"hive", "redshift", "spark", "snowflake", "databricks"}
+func coalesce(expr:&T)-> &T
+
+@platform{"hive", "snowflake"}
+func iff(condition:Bool, expr:&T, expr2:&T)-> &T
+
+@platform{"azure"}
+@alias{"iff"}
+func iif(expr:Bool, true_part:&T, false_part:&T)-> &T
+
+@platform{"hive", "spark", "snowflake", "databricks"}
+func nvl(expr:&T, expr2:&T)-> &T
+
+@platform{"hive", "redshift", "spark", "snowflake", "databricks"}
+func nullif(expr:&T, expr2:&T)-> &T
+
+@platform{"redshift", "spark", "snowflake", "databricks"}
+func nvl2(expr:&T, expr2:&T, expr3:&T)-> &T
+
+@platform{"hive", "snowflake", "databricks"}
+func isnotnull(expr:&T)-> Bool
+
+@platform{"hive", "snowflake", "databricks"}
+func isnull(expr:&T)-> Bool
+
+@platform{"spark", "databricks"}
+func map_concat(expr:Map[&T, &T], expr2:Map[&T, &T])-> Map[&T, &T]
+
+@platform{"snowflake"}
+@alias{"map_concat"}
+func map_cat(map1:Map[&T, &T], map2:Map[&T, &T])-> Map[&T, &T]
+
+@platform{"spark", "snowflake", "databricks"}
+func map_contains_key(map:Map[&T, &T], key:&T)-> Bool
+
+@platform{"spark", "snowflake", "databricks"}
+func map_keys(map:Map[&T, &T])-> List[&T]
+
+@platform{"hive", "spark", "databricks"}
+func str_to_map(expr:Str)-> Map[Str, Str]
+
+@platform{"spark", "databricks"}
+func map(key:&T, value:&T)-> Map[&T, &T]
+
+@platform{"spark", "databricks"}
+func map_entries(expr:Map[&T, &T])-> List[Struct[x &T, y &T]]
+
+@platform{"spark", "databricks"}
+func map_values(expr:Map[&T, &T])-> List[&T]
+
+func ascii(expr:Str)-> Int
+
+@platform{"hive", "redshift", "azure", "snowflake", "databricks"}
+func concat(expr:Str, expr2:Str)-> Str
+
+@platform{"hive", "spark", "azure", "snowflake", "databricks"}
+func concat_ws(sep:Str, expr:Str)-> Str
+
+@platform{"hive", "spark", "azure", "snowflake", "databricks"}
+func concat_ws(sep:Str, expr:List[Str])-> Str
+
+@platform{"hive", "snowflake", "databricks"}
+func parse_url(url:Str, path_to_extract:Str)-> Str
+
+@platform{"hive", "redshift", "spark", "databricks"}
+func chr(number:Int)-> Str
+
+@platform{"hive", "redshift", "spark", "databricks"}
+func initcap(expr:Str)-> Str
+
+@platform{"redshift", "spark", "azure", "snowflake", "databricks"}
+func upper(expr:Str)-> Str
+
+@platform{"hive"}
+@alias{"upper"}
+func ucase(expr:Str)-> Str
+
+@platform{"redshift", "spark", "azure", "snowflake", "databricks"}
+func lower(expr:Str)-> Str
+
+@platform{"hive"}
+@alias{"lower"}
+func lcase(expr:Str)-> Str
+
+func trim(expr:Str)-> Str
+
+func soundex(expr:Str)-> Str
+
+func translate(expr:Str, source_expr:Str, replace_expr:Str)-> Str
+
+func rtrim(expr:Str)-> Str
+
+func ltrim(expr:Str)-> Str
+
+@platform{"hive", "snowflake"}
+func length(expr:Str)-> Int
+
+@platform{"redshift"}
+@alias{"length"}
+func len(expr:Str)-> Int
+
+@platform{"spark"}
+@alias{"length"}
+func char_length(expr:Str)-> Int
+
+@platform{"databricks"}
+@alias{"length"}
+func character_length(expr:Str)-> Int
+
+@platform{"hive", "redshift", "spark", "snowflake", "databricks"}
+func lpad(expr:Str, length:Int, pad_expr:Str)-> Str
+
+@platform{"hive", "redshift", "spark", "snowflake", "databricks"}
+func lpad(expr:SmallInt, length:Int, pad_expr:Str)-> Str
+
+@platform{"hive", "redshift", "spark", "snowflake", "databricks"}
+func rpad(expr:Str, length:Int, pad_expr:Str)-> Str
+
+@platform{"hive", "redshift", "spark", "snowflake", "databricks"}
+func rpad(expr:SmallInt, length:Int, pad_expr:Str)-> Str
+
+@platform{"hive", "redshift", "spark", "snowflake", "databricks"}
+func octet_length(expr:Str)-> Int
+
+@platform{"hive", "redshift", "spark", "snowflake", "databricks"}
+func octet_length(expr:SmallInt)-> Int
+
+@platform{"hive", "redshift", "spark", "snowflake", "databricks"}
+func regexp_replace(expr:Str, regexp:Str, replace_expr:Str)-> Str
+
+@platform{"hive", "spark", "databricks"}
+func regexp_extract(expr:Str, regexp:Str, non_negative_index:Int)-> Str
+
+func replace(expr:Str, search_expr:Str, replace_expr:Str)-> Str
+
+@platform{"hive", "redshift", "spark", "snowflake", "databricks"}
+func repeat(expr:Str, repeat_count:Int)-> Str
+
+@platform{"azure"}
+@alias{"repeat"}
+func replicate(expr:Str, repeat_count:Int)-> Str
+
+@platform{"hive", "redshift", "snowflake", "databricks"}
+func reverse(expr:Str)-> Str
+
+@platform{"hive", "redshift", "snowflake", "databricks"}
+func reverse(expr:List[&T])-> List[&T]
+
+@platform{"hive", "spark", "databricks"}
+func base64(expr:SmallInt)-> Str
+
+// @platform{"redshift", "spark", "azure", "snowflake", "databricks"}
+// func left(Str, Int)-> Str
+
+@platform{"redshift", "spark", "azure", "snowflake", "databricks"}
+func right(expr:Str, length:Int)-> Str
+
+@platform{"hive", "spark", "databricks"}
+func levenshtein(expr:Str, expr2:Str)-> Int
+
+@platform{"redshift", "spark", "databricks"}
+func btrim(expr:Str)-> Str
+
+@platform{"hive", "spark", "databricks"}
+func encode(expr:Str, encoding_type:Str)-> SmallInt
+
+@platform{"hive", "spark", "databricks"}
+func elt(non_negative_index:Int, expr:Str)-> Str
+
+@platform{"hive", "spark", "snowflake", "databricks"}
+func substr(expr:Str, position:Int, length:Int)-> Str
+
+@platform{"redshift", "azure"}
+@alias{"substr"}
+func substring(expr:Str, start_position:Int, number_of_characters:Int)-> Str
+
+@platform{"hive", "redshift", "spark", "snowflake", "databricks"}
+func decode(expr:SmallInt, decoding_type:Str)-> Str
+
+@platform{"hive", "spark", "databricks"}
+func find_in_set(search_expr:Str, source_expr:Str)-> Int
+
+@platform{"hive", "spark", "databricks"}
+func format_number(expr:Int, non_negative_integer_scale:Int)-> Str
+
+@platform{"databricks"}
+func format_number(expr:Int, format:Str)-> Str
+
+@platform{"hive", "spark", "databricks"}
+func get_json_object(json_str:Str, json_path:Str)-> Str
+
+@platform{"hive", "spark","snowflake", "databricks"}
+func instr(expr:Str, sub_str:Str)-> Int
+
+@platform{"hive", "spark", "databricks"}
+func locate(sub_str:Str, expr:Str)-> Int
+
+@platform{"hive", "spark", "databricks"}
+func printf(format:Str, expr:Str)-> Str
+
+@platform{"hive", "spark", "databricks"}
+func printf(format:Str, expr:Int)-> Str
+
+@platform{"hive", "spark", "azure", "snowflake", "databricks"}
+func space(num_of_blank_spaces:Int)-> Str
+
+@platform{"hive", "spark", "snowflake", "databricks"}
+func split(str:Str, regex:Str)-> List[Str]
+
+@platform{"redshift"}
+@alias{"split"}
+func split_to_array(str:Str, delimeter:Str)-> List[Str]
+
+@platform{"azure"}
+@alias{"split"}
+func string_split(expr:Str, delimeter:Str)-> List[Str]
+
+@platform{"hive", "spark", "databricks"}
+func str_to_map(expr:Str)-> Map[Str, Str]
+
+@platform{"hive", "spark", "databricks"}
+func substring_index(expr:Str, delimeter:Str, delimeter_count:Int)-> Str
+
+@platform{"hive", "spark", "databricks"}
+func unbase64(base64_string:Str)-> Str
+
+@platform{"redshift", "azure"}
+func difference(str:Str, str2:Str)-> Int
+
+@platform{"redshift", "spark", "databricks"}
+func position(sub_str:Str, str:Str)-> Int
+
+@platform{"redshift", "spark", "snowflake", "databricks"}
+func regexp_count(source_str:Str, regexp:Str)-> Int
+
+@platform{"redshift", "spark", "snowflake", "databricks"}
+func regexp_instr(source_str:Str, regexp:Str)-> Int
+
+@platform{"redshift", "spark", "snowflake", "databricks"}
+func regexp_substr(source_str:Str, regexp:Str)-> Str
+
+@platform{"spark", "snowflake", "databricks"}
+func bit_length(expr:Str)-> Int
+
+@platform{"spark", "snowflake", "databricks"}
+func bit_length(expr:SmallInt)-> Int
+
+@platform{"spark", "snowflake", "databricks"}
+func endswith(expr:Str, end_expr:Str)-> Bool
+
+@platform{"spark", "snowflake", "databricks"}
+func endswith(expr:SmallInt, end_expr:SmallInt)-> Bool
+
+@platform{"spark", "databricks"}
+func regexp_extract_all(expr:Str, regexp:Str)-> List[Str]
+
+@platform{"snowflake"}
+@alias{"regexp_extract_all"}
+func regexp_substr_all(expr:Str, pattern:Str)-> List[Str]
+
+@platform{"spark", "snowflake", "databricks"}
+func sentences(expr:Str)-> List[List[Str]]
+
+@platform{"spark", "snowflake", "databricks"}
+func split_part(str:Str, delimeter:Str, part_num:Int)-> Str
+
+@platform{"spark", "snowflake", "databricks"}
+func startswith(expr:Str, start_expr:Str)-> Bool
+
+@platform{"spark", "snowflake", "databricks"}
+func to_binary(expr:Str)-> Str
+
+@platform{"spark", "snowflake"}
+func to_char(expr:Str, format:Str)-> Str
+
+@platform{"spark", "snowflake"}
+func to_char(expr:Float, format:Str)-> Str
+
+@platform{"spark", "snowflake"}
+func to_char(expr:SmallInt, format:Str)-> Str
+
+@platform{"spark", "snowflake"}
+func to_char(expr:Datetime, format:Str)-> Str
+
+@platform{"spark", "snowflake", "databricks"}
+func to_number(expr:Str, format:Str)-> Int
+
+@platform{"spark", "snowflake", "databricks"}
+func to_varchar(expr:&T, format:Str)-> Str
+
+@platform{"spark", "snowflake", "databricks"}
+func try_to_binary(expr:Str)-> Str
+
+@platform{"spark", "snowflake", "databricks"}
+func try_to_number(expr:Str)-> Int
+
+@platform{"redshift", "azure", "snowflake", "databricks"}
+func charindex(sub_str:Str, str:Str)-> Int
+
+func abs(expr:Int)-> Int
+
+func abs(expr:Interval)-> Interval
+
+@platform{"hive", "redshift", "spark", "snowflake", "databricks"}
+func ceil(expr:Float)-> Int
+
+@platform{"azure"}
+@alias{"ceil"}
+func ceiling(expr:Float)-> Int
+
+func floor(expr:Float)-> Int
+
+func round(expr:Int)-> Int
+
+func exp(expr:Int)-> Int
+
+@platform{"hive", "spark", "azure", "databricks"}
+func log10(expr:Float)-> Float
+
+@platform{"redshift"}
+@alias{"log10"}
+func dlog10(number:Float)-> Float
+
+@platform{"hive", "spark", "databricks"}
+func log2(expr:Float)-> Float
+
+@platform{"redshift", "azure"}
+func log(base:Float, expr:Float)-> Float
+
+@platform{"hive", "redshift", "spark", "snowflake", "databricks"}
+func pow(expr:Float, exponent_value:Float)-> Float
+
+@platform{"azure"}
+@alias{"pow"}
+func power(expr:Float, exponent_value:Float)-> Float
+
+func sqrt(expr:Int)-> Float
+
+func acos(expr:Int)-> Float
+
+func asin(expr:Int)-> Float
+
+func atan(expr:Int)-> Float
+
+func cos(expr:Int)-> Float
+
+func sin(expr:Int)-> Float
+
+func tan(expr:Int)-> Float
+
+func sign(expr:Float)-> Int
+
+@platform{"hive", "spark", "databricks"}
+func bround(expr:Float, target_scale:Float)-> Float
+
+@platform{"hive", "redshift", "spark", "azure", "databricks"}
+func rand()-> Float
+
+@platform{"hive", "redshift", "spark", "azure", "databricks"}
+func rand(seed:Int)-> Float
+
+@platform{"hive", "redshift", "spark", "snowflake", "databricks"}
+func ln(expr:Int)-> Float
+
+@platform{"hive", "spark", "databricks"}
+func bin(expr:Int)-> Str
+
+@platform{"hive", "spark", "databricks"}
+func hex(expr:Int)-> Str
+
+@platform{"hive", "spark", "databricks"}
+func hex(expr:Str)-> Str
+
+@platform{"hive", "spark", "databricks"}
+func unhex(expr:Str)-> SmallInt
+
+@platform{"hive", "spark", "databricks"}
+func conv(num:Int, from_base:Int, to_base:Int)-> Str
+
+@platform{"hive", "spark", "databricks"}
+func conv(num:Str, from_base:Int, to_base:Int)-> Str
+
+@platform{"hive", "spark", "databricks"}
+func pmod(dividend:Int, divisor:Int)-> Int
+
+func degrees(expr:Int)-> Float
+
+func radians(expr:Int)-> Float
+
+@platform{"hive", "spark", "databricks"}
+func positive(expr:Int)-> Int
+
+@platform{"hive", "spark", "databricks"}
+func positive(expr:Interval)-> Interval
+
+@platform{"hive", "spark", "databricks"}
+func negative(expr:Int)-> Int
+
+@platform{"hive", "spark", "databricks"}
+func negative(expr:Interval)-> Interval
+
+@platform{"hive", "spark", "databricks"}
+func e()-> Float
+
+@platform{"hive", "redshift", "spark", "snowflake", "databricks"}
+func pi()-> Float
+
+@platform{"hive", "spark", "snowflake", "databricks"}
+func factorial(expr:Int)-> Int
+
+@platform{"hive", "redshift", "spark", "snowflake", "databricks"}
+func cbrt(expr:Int)-> Float
+
+@platform{"hive", "spark", "databricks"}
+func shiftleft(expr:Int, num_of_bits_to_shift:Int)-> Int
+
+@platform{"snowflake"}
+@alias{"shiftleft"}
+func bitshiftleft(expr:Int, num_of_bits_to_shift:Int)-> Int
+
+@platform{"hive", "spark", "databricks"}
+func shiftright(expr:Int, num_of_bits_to_shift:Int)-> Int
+
+@platform{"snowflake"}
+@alias{"shiftright"}
+func bitshiftright(expr:Int, num_of_bits_to_shift:Int)-> Int
+
+@platform{"hive", "spark", "databricks"}
+func shiftrightunsigned(expr:Int, num_of_bits_to_shift:Int)-> Int
+
+@platform{"hive", "redshift", "spark", "azure", "databricks"}
+func greatest(expr:&T, expr:&T)-> &T
+
+@platform{"hive", "redshift", "spark", "azure", "databricks"}
+func least(expr:&T, expr:&T)-> &T 
+
+@platform{"hive", "spark", "snowflake", "databricks"}
+func width_bucket(expr:Int, min_expr:Int, max_expr:Int, num_of_buckets:Int)-> Int
+
+@platform{"hive", "spark", "snowflake", "databricks"}
+func width_bucket(expr:Interval, min_expr:Interval, max_expr:Interval, num_of_buckets:Int)-> Int
+
+@platform{"hive", "spark", "snowflake", "databricks"}
+func cosh(expr:Int)-> Float
+
+@platform{"hive", "spark", "snowflake", "databricks"}
+func tanh(expr:Int)-> Float
+
+@platform{"hive", "spark", "snowflake", "databricks"}
+func cot(expr:Int)-> Float
+
+@platform{"redshift", "spark", "snowflake", "databricks"}
+func atan2(expr:Int, expr2:Int)-> Float
+
+@platform{"spark", "databricks"}
+func rint(expr:Int)-> Float
+
+@platform{"spark", "databricks"}
+func sec(expr:Int)-> Float
+
+@platform{"spark", "databricks"}
+func try_add(expr:Int, expr2:Int)-> Int 
+
+@platform{"spark", "databricks"}
+func try_add(expr:Interval, expr2:Int)-> Interval 
+
+@platform{"spark", "databricks"}
+func try_divide(dividend:Int, divisor:Int)-> Int
+
+@platform{"spark", "databricks"}
+func try_divide(dividend:Interval, divisor:Int)-> Interval
+
+@platform{"spark", "databricks"}
+func try_multiply(multiplier:Int, multiplicand:Int)-> Int
+
+@platform{"spark", "databricks"}
+func try_multiply(multiplier:Interval, multiplicand:Int)-> Interval
+
+@platform{"spark", "databricks"}
+func try_subtract(expr:Int, expr2:Int)-> Int
+
+@platform{"spark", "databricks"}
+func try_subtract(expr:Interval, expr2:Int)-> Interval
+
+@platform{"hive", "spark", "databricks"}
+func mask(expr:Str)-> Str
+
+@platform{"hive", "spark", "databricks"}
+func explode(collection:List[&T])-> &T
+
+@platform{"hive", "spark", "databricks"}
+func explode(collection:Map[&T, &T])-> &T
+
+@platform{"hive", "spark"}
+func posexplode(expr:Map[&T, &T])-> Int
+
+@platform{"hive", "spark", "databricks"}
+func inline(expr:List[Struct[x &T, y &T]])-> &T 
+
+@platform{"hive", "spark", "databricks"}
+func stack(num_of_rows:Int, expr:&T)-> &T
+
+@platform{"hive", "spark", "databricks"}
+func json_tuple(json_str:Str, path:Str)-> Str
+
+@platform{"spark", "databricks"}
+func explode_outer(collection:List[&T])-> &T
+
+@platform{"spark", "databricks"}
+func explode_outer(expr:Map[&T, &T])-> &T
+
+@platform{"spark", "databricks"}
+func inline_outer(expr:List[Struct[x &T, y &T]])-> &T
+
+@platform{"spark", "databricks"}
+func posexplode_outer(expr:List[&T])-> &T
+
+@platform{"spark", "databricks"}
+func posexplode_outer(expr:Map[&T, &T])-> &T
+
+@platform{"spark", "azure", "databricks"}
+func lead(expr:&T, ignore_null=true)-> &T
+
+@platform{"azure", "databricks"}
+func percentile_disc(percentile:Float)-> Float
+
+@platform{"azure", "databricks"}
+func percentile_disc(percentile:List[Float])-> List[Float]
+
+@platform{"redshift", "spark", "databricks"}
+func json_array_length(json_array:Str)-> Int
+
+@platform{"spark", "databricks"}
+func from_json(json_str:Str, schema:Str)-> Map[&T, &T]
+
+@platform{"spark", "databricks"}
+func get_json_object(expr:Str, path:Str)-> Str
+
+@platform{"spark", "databricks"}
+func json_object_keys(json_object:Str)-> List[Str]
+
+@platform{"spark", "databricks"}
+func json_tuple(json_str:Str, path:Str)-> &T
+
+@platform{"spark", "databricks"}
+func schema_of_json(json_str:Str)-> Str
+
+@platform{"spark", "databricks"}
+func to_json(expr:Struct[x &T, y &T])-> Str
+
+@platform{"hive", "redshift", "spark", "snowflake"}
+func current_user()-> Str
+
+@platform{"hive", "redshift", "spark", "snowflake"}
+func current_database()-> Str
+
+@platform{"hive", "redshift", "spark", "azure"}
+func version()-> Str
+
+@platform{"snowflake", "databricks"}
+@alias{"version"}
+func current_version()-> Str
+
+@platform{"spark", "databricks"}
+func current_timezone()-> Str
+
+@platform{"spark", "databricks"}
+func curdate()-> Date
+
+@platform{"hive", "databricks"}
+func hash(expr:&T)-> Int
+
+@platform{"hive", "spark", "databricks"}
+func typeof(expr:&T)-> Str
+
+@platform{"hive", "spark", "databricks"}
+func java_method(class:Str, method:Str)-> Str
+
+@platform{"hive", "spark", "databricks"}
+func reflect(class:Str, method:Str)-> Str
+
+@platform{"hive", "spark", "databricks"}
+func md5(Str)-> Str
+
+@platform{"spark", "databricks"}
+func md5(expr:SmallInt)-> Str
+
+@platform{"hive", "redshift", "databricks"}
+func sha1(expr:Str)-> Str
+
+@platform{"hive", "redshift", "databricks"}
+func sha1(expr:SmallInt)-> Str
+
+@platform{"hive", "redshift", "databricks"}
+func crc32(expr:SmallInt)-> Int
+
+@platform{"hive", "redshift", "databricks"}
+func crc32(expr:Str)-> Int
+
+@platform{"hive", "redshift", "databricks"}
+func sha2(expr:Str, bitLength:Int)-> Str
+
+@platform{"hive", "spark", "databricks"}
+func aes_encrypt(expr:Str, key:Str)-> SmallInt
+
+@platform{"hive", "spark", "databricks"}
+func aes_decrypt(expr:SmallInt, key:SmallInt)-> Str

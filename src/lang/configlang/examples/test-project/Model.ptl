@@ -1,0 +1,126 @@
+module com.Peritelios.dimcustomer
+  
+ @create
+        transform master.dimcustomer   with (view _ on (view _ on staging.customermgmt as cm
+     attributes
+     sk = row_number()over ( order by having cm.c_id )
+cm.c_id
+cm.c_tax_id
+status = if (cm.actiontype = 'INACT')  then 'INACTIVE' else 'ACTIVE'
+cm.c_l_name
+cm.c_f_name
+cm.c_m_name
+gender = if (UPPER(cm.c_gndr) = 'M') or (UPPER(cm.c_gndr) = 'F')  then UPPER(cm.c_gndr) else 'U'
+cm.c_tier
+cm.c_dob
+cm.c_adline1
+cm.c_adline2
+cm.c_zipcode
+cm.c_city
+cm.c_state_prov
+cm.c_ctry
+phone1 = if cm.c_p_1_ctry_code is not null and cm.c_p_1_area_code is not null and cm.c_p_1_local is not null  then CONCAT_WS(' ',
+CONCAT_WS('(',
+CONCAT('+',
+cm.c_p_1_ctry_code,
+cm.c_p_1_area_code),
+')'),
+cm.c_p_1_local,
+COALESCE(cm.c_p_1_ext,
+'')) else if cm.c_p_1_ctry_code is null and cm.c_p_1_area_code is not null and cm.c_p_1_local is not null  then CONCAT_WS(' ',
+CONCAT('(',
+cm.c_p_1_area_code,
+')'),
+cm.c_p_1_local,
+COALESCE(cm.c_p_1_ext,
+'')) else if cm.c_p_1_area_code is null and cm.c_p_1_local is not null  then CONCAT(cm.c_p_1_local,
+COALESCE(cm.c_p_1_ext,
+'')) else null
+phone2 = if cm.c_p_2_ctry_code is not null and cm.c_p_2_area_code is not null and cm.c_p_2_local is not null  then CONCAT_WS(' ',
+CONCAT_WS('(',
+CONCAT('+',
+cm.c_p_2_ctry_code,
+cm.c_p_2_area_code),
+')'),
+cm.c_p_2_local,
+COALESCE(cm.c_p_2_ext,
+'')) else if cm.c_p_2_ctry_code is null and cm.c_p_2_area_code is not null and cm.c_p_2_local is not null  then CONCAT_WS(' ',
+CONCAT('(',
+cm.c_p_2_area_code,
+')'),
+cm.c_p_2_local,
+COALESCE(cm.c_p_2_ext,
+'')) else if cm.c_p_2_area_code is null and cm.c_p_2_local is not null  then CONCAT(cm.c_p_2_local,
+COALESCE(cm.c_p_2_ext,
+'')) else null
+phone3 = if cm.c_p_3_ctry_code is not null and cm.c_p_3_area_code is not null and cm.c_p_3_local is not null  then CONCAT_WS(' ',
+CONCAT_WS('(',
+CONCAT('+',
+cm.c_p_3_ctry_code,
+cm.c_p_3_area_code),
+')'),
+cm.c_p_3_local,
+COALESCE(cm.c_p_3_ext,
+'')) else if cm.c_p_3_ctry_code is null and cm.c_p_3_area_code is not null and cm.c_p_3_local is not null  then CONCAT_WS(' ',
+CONCAT('(',
+cm.c_p_3_area_code,
+')'),
+cm.c_p_3_local,
+COALESCE(cm.c_p_3_ext,
+'')) else if cm.c_p_3_area_code is null and cm.c_p_3_local is not null  then CONCAT(cm.c_p_3_local,
+COALESCE(cm.c_p_3_ext,
+'')) else null
+cm.c_prim_email
+cm.c_alt_email
+nat_tx_name = ntr.tx_name
+nat_tx_rate = ntr.tx_rate
+lcl_tx_name = ltr.tx_name
+lcl_tx_rate = ltr.tx_rate
+iscurrent = if (cm.actionts = MAX(cm.actionts)over (partition by cm.c_id  ))  then true else true
+batchid = 1
+effectivedate = cm.actionts::Date
+enddate = '9999-12-31'::Date
+cm.actiontype
+      filter
+true
+          
+          
+          
+end view) as subquery
+     attributes
+     sk
+customerid = c_id
+taxid = c_tax_id
+status
+lastname = c_l_name
+firstname = c_f_name
+middleinitial = c_m_name
+gender
+tier = c_tier
+dob = c_dob
+addressline1 = c_adline1
+addressline2 = c_adline2
+postalcode = c_zipcode
+city = c_city
+stateprov = c_state_prov
+country = c_ctry
+phone1
+phone2
+phone3
+email1 = c_prim_email
+email2 = c_alt_email
+nationaltaxratedesc = nat_tx_name
+nationaltaxrate = nat_tx_rate
+localtaxratedesc = lcl_tx_name
+localtaxrate = lcl_tx_rate
+agencyid = null
+creditrating = null
+networth = null
+marketingnameplate = null
+iscurrent
+batchid
+effectivedate
+enddate
+      end view)
+attributes
+end transform

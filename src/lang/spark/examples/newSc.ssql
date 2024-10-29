@@ -1,0 +1,9 @@
+drop table  employeetable ;
+
+drop table  userdb.employeetable ;
+
+drop table  employeetable ;
+
+drop table if exists employeetable ;
+
+drop table  employeetable purge;

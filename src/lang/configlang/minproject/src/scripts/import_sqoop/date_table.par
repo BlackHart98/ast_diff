@@ -1,0 +1,17 @@
+--connect
+jdbc:postgresql://database:5432/postgres?currentSchema=temp_db
+--table
+date
+--username
+postgres
+--password
+passw0rd
+--num-mappers
+1
+--hive-import
+--hive-table
+staging.date
+--map-column-hive
+sk_dateid=STRING,datevalue=STRING,datedesc=STRING,calendaryearid=STRING,calendaryeardesc=STRING,calendarqtrid=STRING,calendarqtrdesc=STRING,calendarmonthid=STRING,calendarmonthdesc=STRING,calendarweekid=STRING,calendarweekdesc=STRING,dayofweeknum=INT,dayofweekdesc=STRING,fiscalyearid=STRING,fiscalyeardesc=STRING,fiscalqtrid=STRING,fiscalqtrdesc=STRING,holidayflag=STRING
+--target-dir
+/user/sqoop/date

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bundle-app xmlns="uri:oozie:bundle:0.2" name="sales_pipeline_bundle">
+  <coordinator xmlns="uri:oozie:coordinator:0.5" name="myScheduler">
+    <app-path xmlns="">coordinators/myScheduler.xml</app-path>
+  </coordinator>
+</bundle-app>

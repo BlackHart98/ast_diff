@@ -1,0 +1,1 @@
+UPDATE iceberg_table SET category='c2' WHERE category='c1';

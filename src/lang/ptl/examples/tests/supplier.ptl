@@ -1,0 +1,28 @@
+module HQL 
+  
+ @dropIfExist  
+view supplier 
+(view _ on northwind.suppliers 
+      attributes
+      *
+ ingestion_timestamp = currentTimeStamp()
+       end view)
+end view
+
+@config(
+    materializedAs = SCD(
+        type = 2
+        , strategy = Timestamp
+        , uniqueKey = customerId
+        , updatedAt = updateAt
+    )
+    storageFormat = Iceberg
+)
+view EmployeeDeductions on Employee
+    attributes
+        customerId = customerId::Int
+        name = name::Str 
+        title = title::Str 
+        salary = salary::Str 
+        updatedAt = updatedAt::Timestamp
+end view

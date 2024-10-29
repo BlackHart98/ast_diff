@@ -1,0 +1,23 @@
+module scd
+
+@config(
+    materializedAs = Table
+)
+view supplier 
+    (view _ on northwind.suppliers 
+        attributes
+            *
+            ingestion_timestamp = current_timeStamp()
+    end view)
+end view
+
+
+@config(
+  materializedAs = View
+)
+view EmployeeDeductions on Employee
+  attributes
+	name = firstName::Str
+	title = title::Str
+	salary = salary::Float + .01
+end view

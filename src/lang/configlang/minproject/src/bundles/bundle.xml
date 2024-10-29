@@ -1,0 +1,21 @@
+<bundle-app name='bundle-app' xmlns='uri:oozie:bundle:0.2'>
+    <parameters>
+     <property>
+         <name>start</name>
+         <value>${start}</value>
+     </property>
+     <property>
+         <name>end</name>
+         <value>${end}</value>
+     </property>
+   </parameters>
+   <controls>
+     <kick-off-time>2016-07-01T00:00Z</kick-off-time>
+   </controls>
+   <coordinator name='full-historical-load-coordinator'>
+     <app-path>${nameNode}/user/${userName}/${oozieRoot}/coordinators/full_historical_load_coordinator.xml</app-path>
+   </coordinator>
+   <coordinator name='incremental-load-coordinator'>
+     <app-path>${nameNode}/user/${userName}/${oozieRoot}/coordinators/incremental_load_coordinator.xml</app-path>
+   </coordinator>
+ </bundle-app>

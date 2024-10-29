@@ -1,0 +1,422 @@
+<workflow-app xmlns="uri:oozie:workflow:0.5" name="incremental-load-workflow">
+    <start to="create-schema-staging"/>
+
+    <action name="create-schema-staging">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>beeline</exec>
+            <argument>-u</argument>
+            <argument>${hiveUsername}</argument>
+            <argument>-p</argument>
+            <argument>${hivePassword}</argument>
+            <argument>-f</argument>
+            <argument>${incrementalUpdateHome}/create_schema_staging.hql</argument>
+        </shell>
+        <ok to="truncate-staging"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="truncate-staging">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>beeline</exec>
+            <argument>-u</argument>
+            <argument>${hiveUsername}</argument>
+            <argument>-p</argument>
+            <argument>${hivePassword}</argument>
+            <argument>-f</argument>
+            <argument>${incrementalUpdateHome}/truncate_staging.hql</argument>
+        </shell>
+        <ok to="load-staging"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="load-staging">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>beeline</exec>
+            <argument>-u</argument>
+            <argument>${hiveUsername}</argument>
+            <argument>-p</argument>
+            <argument>${hivePassword}</argument>
+            <argument>-f</argument>
+            <argument>${incrementalUpdateHome}/load_staging.hql</argument>
+        </shell>
+        <ok to="tl-master-dimcustomer"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="tl-master-dimcustomer">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>beeline</exec>
+            <argument>-u</argument>
+            <argument>${hiveUsername}</argument>
+            <argument>-p</argument>
+            <argument>${hivePassword}</argument>
+            <argument>-f</argument>
+            <argument>${incrementalUpdateHome}/tl_master_dimcustomer.hql</argument>
+        </shell>
+        <ok to="tl-master-dimaccount"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="tl-master-dimaccount">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>beeline</exec>
+            <argument>-u</argument>
+            <argument>${hiveUsername}</argument>
+            <argument>-p</argument>
+            <argument>${hivePassword}</argument>
+            <argument>-f</argument>
+            <argument>${incrementalUpdateHome}/tl_master_dimaccount.hql</argument>
+        </shell>
+        <ok to="tl-master-dimtrade"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="tl-master-dimtrade">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>beeline</exec>
+            <argument>-u</argument>
+            <argument>${hiveUsername}</argument>
+            <argument>-p</argument>
+            <argument>${hivePassword}</argument>
+            <argument>-f</argument>
+            <argument>${incrementalUpdateHome}/tl_master_dimtrade.hql</argument>
+        </shell>
+        <ok to="fork1"/>
+        <error to="fail"/>
+    </action>
+
+    <fork name="fork1">
+        <path start="tl-master-factholdings"/>
+        <path start="tl-master-factmarkethistory"/>
+        <path start="tl-master-factwatches"/>
+        <path start="tl-master-factcashbalances"/>
+    </fork>
+
+
+    <action name="tl-master-factholdings">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>beeline</exec>
+            <argument>-u</argument>
+            <argument>${hiveUsername}</argument>
+            <argument>-p</argument>
+            <argument>${hivePassword}</argument>
+            <argument>-f</argument>
+            <argument>${incrementalUpdateHome}/tl_master_factholdings.hql</argument>
+        </shell>
+        <ok to="join1"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="tl-master-factmarkethistory">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>beeline</exec>
+            <argument>-u</argument>
+            <argument>${hiveUsername}</argument>
+            <argument>-p</argument>
+            <argument>${hivePassword}</argument>
+            <argument>-f</argument>
+            <argument>${incrementalUpdateHome}/tl_master_factmarkethistory.hql</argument>
+        </shell>
+        <ok to="join1"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="tl-master-factwatches">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>beeline</exec>
+            <argument>-u</argument>
+            <argument>${hiveUsername}</argument>
+            <argument>-p</argument>
+            <argument>${hivePassword}</argument>
+            <argument>-f</argument>
+            <argument>${incrementalUpdateHome}/tl_master_factwatches.hql</argument>
+        </shell>
+        <ok to="join1"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="tl-master-factcashbalances">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>beeline</exec>
+            <argument>-u</argument>
+            <argument>${hiveUsername}</argument>
+            <argument>-p</argument>
+            <argument>${hivePassword}</argument>
+            <argument>-f</argument>
+            <argument>${incrementalUpdateHome}/tl_master_factcashbalances.hql</argument>
+        </shell>
+        <ok to="join1"/>
+        <error to="fail"/>
+    </action>
+
+    <join name = "join1" to = "prospect"/>
+
+    <action name="prospect">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>beeline</exec>
+            <argument>-u</argument>
+            <argument>${hiveUsername}</argument>
+            <argument>-p</argument>
+            <argument>${hivePassword}</argument>
+            <argument>-f</argument>
+            <argument>${incrementalUpdateHome}/prospect.hql</argument>
+        </shell>
+        <ok to="update-prospect"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="update-prospect">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>beeline</exec>
+            <argument>-u</argument>
+            <argument>${hiveUsername}</argument>
+            <argument>-p</argument>
+            <argument>${hivePassword}</argument>
+            <argument>-f</argument>
+            <argument>${incrementalUpdateHome}/update_prospect.hql</argument>
+        </shell>
+        <ok to="finish-incremental-update-b2"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="finish-incremental-update-b2">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>date</exec>
+            <argument>-u</argument>
+            <argument>--rfc-3339='seconds'</argument>
+            <argument>>></argument>
+            <argument>/home/workspace/times.txt</argument>
+        </shell>
+        <ok to="truncate-staging-b3"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="truncate-staging-b3">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>beeline</exec>
+            <argument>-u</argument>
+            <argument>${hiveUsername}</argument>
+            <argument>-p</argument>
+            <argument>${hivePassword}</argument>
+            <argument>-f</argument>
+            <argument>${incrementalUpdateHome}/truncate_staging.hql</argument>
+        </shell>
+        <ok to="load-staging-b3"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="load-staging-b3">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>beeline</exec>
+            <argument>-u</argument>
+            <argument>${hiveUsername}</argument>
+            <argument>-p</argument>
+            <argument>${hivePassword}</argument>
+            <argument>-f</argument>
+            <argument>${incrementalUpdateHome}/load_staging_b3.hql</argument>
+        </shell>
+        <ok to="tl-master-dimcustomer-b3"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="tl-master-dimcustomer-b3">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>beeline</exec>
+            <argument>-u</argument>
+            <argument>${hiveUsername}</argument>
+            <argument>-p</argument>
+            <argument>${hivePassword}</argument>
+            <argument>-f</argument>
+            <argument>${incrementalUpdateHome}/tl_master_dimcustomer_b3.hql</argument>
+        </shell>
+        <ok to="tl-master-dimaccount-b3"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="tl-master-dimaccount-b3">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>beeline</exec>
+            <argument>-u</argument>
+            <argument>${hiveUsername}</argument>
+            <argument>-p</argument>
+            <argument>${hivePassword}</argument>
+            <argument>-f</argument>
+            <argument>${incrementalUpdateHome}/tl_master_dimaccount_b3.hql</argument>
+        </shell>
+        <ok to="tl-master-dimtrade-b3"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="tl-master-dimtrade-b3">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>beeline</exec>
+            <argument>-u</argument>
+            <argument>${hiveUsername}</argument>
+            <argument>-p</argument>
+            <argument>${hivePassword}</argument>
+            <argument>-f</argument>
+            <argument>${incrementalUpdateHome}/tl_master_dimtrade_b3.hql</argument>
+        </shell>
+        <ok to="fork2"/>
+        <error to="fail"/>
+    </action>
+
+    <fork name="fork2">
+        <path start="tl-master-factholdings-b3"/>
+        <path start="tl-master-factmarkethistory-b3"/>
+        <path start="tl-master-factwatches-b3"/>
+        <path start="tl-master-factcashbalances-b3"/>
+    </fork>
+
+
+    <action name="tl-master-factholdings-b3">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>beeline</exec>
+            <argument>-u</argument>
+            <argument>${hiveUsername}</argument>
+            <argument>-p</argument>
+            <argument>${hivePassword}</argument>
+            <argument>-f</argument>
+            <argument>${incrementalUpdateHome}/tl_master_factholdings_b3.hql</argument>
+        </shell>
+        <ok to="join2"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="tl-master-factmarkethistory-b3">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>beeline</exec>
+            <argument>-u</argument>
+            <argument>${hiveUsername}</argument>
+            <argument>-p</argument>
+            <argument>${hivePassword}</argument>
+            <argument>-f</argument>
+            <argument>${incrementalUpdateHome}/tl_master_factmarkethistory_b3.hql</argument>
+        </shell>
+        <ok to="join2"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="tl-master-factwatches-b3">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>beeline</exec>
+            <argument>-u</argument>
+            <argument>${hiveUsername}</argument>
+            <argument>-p</argument>
+            <argument>${hivePassword}</argument>
+            <argument>-f</argument>
+            <argument>${incrementalUpdateHome}/tl_master_factwatches_b3.hql</argument>
+        </shell>
+        <ok to="join2"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="tl-master-factcashbalances-b3">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>beeline</exec>
+            <argument>-u</argument>
+            <argument>${hiveUsername}</argument>
+            <argument>-p</argument>
+            <argument>${hivePassword}</argument>
+            <argument>-f</argument>
+            <argument>${incrementalUpdateHome}/tl_master_factcashbalances_b3.hql</argument>
+        </shell>
+        <ok to="join2"/>
+        <error to="fail"/>
+    </action>
+
+    <join name = "join2" to = "prospect-b3"/>
+
+    <action name="prospect-b3">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>beeline</exec>
+            <argument>-u</argument>
+            <argument>${hiveUsername}</argument>
+            <argument>-p</argument>
+            <argument>${hivePassword}</argument>
+            <argument>-f</argument>
+            <argument>${incrementalUpdateHome}/prospect_b3.hql</argument>
+        </shell>
+        <ok to="update-prospect-b3"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="update-prospect-b3">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>beeline</exec>
+            <argument>-u</argument>
+            <argument>${hiveUsername}</argument>
+            <argument>-p</argument>
+            <argument>${hivePassword}</argument>
+            <argument>-f</argument>
+            <argument>${incrementalUpdateHome}/update_prospect_b3.hql</argument>
+        </shell>
+        <ok to="finish-incremental-update-b3"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="finish-incremental-update-b3">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>../scripts/finish_incremental_update_b3.sh</exec>
+            <capture-output/>
+        </shell>
+        <ok to="end"/>
+        <error to="fail"/>
+    </action>
+
+    <kill name="fail">
+        <message>Action failed, error message[${wf:errorMessage(wf:lastErrorNode())}]</message>
+    </kill>
+
+    <end name="end"/>
+</workflow-app>

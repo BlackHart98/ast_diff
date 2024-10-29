@@ -1,0 +1,109 @@
+module real_time_config
+
+
+configuration realTime:
+     version = 0.1.0
+     adeptVersion = 0.1.0
+     workflow= reverse engineering
+     environments:
+        environment dev:
+           runtime = runtime1
+           target = OnPrem
+           sqlEngine = sqlEngine1
+     pipelines :
+        pipeline test_realtime :
+                $start= ""
+                $end="" 
+                cadence =@daily
+                utc=""
+                properties:
+                        "runDate"="Pipeline.instance.runDate"
+                        "machineName"=${machineName} 
+            realtime:
+                mapping =  mappings.realtime_mapping[BatchdateMapping,DatesMapping,FinwireMapping,FinwirecmpMapping,FinwiresecMapping,FinwirefinMapping,HrMapping,IndustryMapping,ProspectMapping,StatustypeMapping,TaxrateMapping,TimeMapping,TradetypeMapping]
+                 
+                pubSubPlatform: 
+                       runtime: Docker
+                       redpanda:
+                         user = "exampleuser"
+                         password = "examplepass"
+
+                  ivmPlatform: 
+                       runtime: Docker
+                       feldera:
+                          user = "exampledb"
+                          password = "exampleuser"
+
+                  objectStoragePlatform: 
+                       runtime: Docker
+                       minio:
+                         user = "exampledb"
+                         password = "exampleuser"
+
+                cdcPlatform:
+                  runtime: Docker
+                  debezium: 
+                    datasource: 
+                      postgres: 
+                        host = "oltp"
+                        port = 5432
+                        user = "postgres"
+                        password = "postgres"
+                        dbName = "oltp"  
+                
+
+            view dimdate :
+                 viewRef = dimDate.dimdate
+                 materializedAs = View
+            
+            view dimTime:
+                 viewRef = dimTime.dimtime
+                  materializedAs = View
+               
+            view industry :
+                 viewRef = industry.industry
+                 materializedAs = View
+
+            view finwireCMP :
+                 viewRef = loadFinwireCMP.staging.finwire_cmp
+                 materializedAs = View
+
+            view finwireFin :
+                 viewRef = loadFinwireFin.staging.finwire_fin
+                 materializedAs = View
+            
+            view finwireSec :
+                 viewRef = loadFinwireFin.staging.finwire_sec
+                 materializedAs = View
+
+            view dimCompany :
+                 viewRef = loadFinwireFin.dimcompany
+                 materializedAs = View
+
+            view tradetype :
+                 viewRef = loadTradeType.tradetype
+                 materializedAs = View
+
+            view statusType :
+                 viewRef = statusType.statustype
+                 materializedAs = View
+
+            view taxRate :
+                 viewRef = taxRate.taxrate
+                 materializedAs = View
+
+            view temporarybroker :
+                 viewRef = transformMasterDimBroker.tmp_mindate
+                 materializedAs = View
+                 
+            view dimBroker :
+                 viewRef = transformMasterDimBroker.dimbroker
+                 materializedAs = Table
+            
+            view skDate :
+                 viewRef = transformMasterProspect.tmp_sk_dateid
+                 materializedAs = View
+                 
+            view prospect :
+                 viewRef = transformMasterProspect.prospect
+                 materializedAs = View

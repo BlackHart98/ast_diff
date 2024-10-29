@@ -1,0 +1,15 @@
+module test
+
+{% let x = 5%}
+
+defmacro createDim(x)
+    entity #{x}
+        acctname : String
+        owner : String
+        category : String 
+        validat : String
+        expiredat : String
+     end entity
+end defmacro
+   
+createDim!("Account")

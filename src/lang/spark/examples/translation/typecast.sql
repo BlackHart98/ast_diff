@@ -1,0 +1,1 @@
+cast("kachi" as INT)

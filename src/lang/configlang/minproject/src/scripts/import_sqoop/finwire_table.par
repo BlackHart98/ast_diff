@@ -1,0 +1,17 @@
+--connect
+jdbc:postgresql://database:5432/postgres?currentSchema=temp_db
+--table
+finwire
+--username
+postgres
+--password
+passw0rd
+--num-mappers
+1
+--hive-import
+--hive-table
+staging.finwire
+--map-column-hive
+text=STRING
+--target-dir
+/user/sqoop/finwire

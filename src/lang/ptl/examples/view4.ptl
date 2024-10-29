@@ -1,0 +1,36 @@
+module HQL 
+  
+ 
+view XX on
+    (view _ on  Transactions
+        attributes
+            *
+        end view
+    union all
+    view _ on  HistoricalInfo
+        attributes
+            *
+        end view) as q
+    attributes
+        viewAmount = 0
+        number = 0
+        kkk = 9
+        ggg = l
+end view
+
+subview (
+    view Foo on Bar
+        attributes
+            viewAmount = 0
+            number = 0
+            kkk = 9
+            ggg = l
+    end view
+)
+view FooBar on Foo
+    attributes
+        viewAmount = 0
+        number = 0
+        kkk = 9
+        ggg = l
+end view

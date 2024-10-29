@@ -1,0 +1,786 @@
+WITH t(x,y) AS (SELECT 1, 2)
+SELECT * FROM t WHERE x = 1 AND y = 2;
+
+-- CTE in CTE definition
+WITH t AS (
+    WITH t2 AS (SELECT 1)
+    SELECT * FROM t2
+)
+SELECT * FROM t;
+
+
+
+-- CTE in subquery
+SELECT max(c) FROM (
+    WITH t(c) AS (SELECT 1)
+    SELECT * FROM t
+);
+
+
+-- CTE in subquery expression
+SELECT (
+    WITH t AS (SELECT 1)
+    SELECT * FROM t
+);
+
+
+-- CTE in CREATE VIEW statement
+CREATE VIEW v AS
+    WITH t(a, b, c, d) AS (SELECT 1, 2, 3, 4)
+    SELECT * FROM t;
+SELECT * FROM v;
+
+
+-- If name conflict is detected in nested CTE, then AnalysisException is thrown by default.
+-- SET spark.sql.legacy.ctePrecedencePolicy = CORRECTED (which is recommended),
+-- inner CTE definitions take precedence over outer definitions.
+SET spark.sql.legacy.ctePrecedencePolicy = CORRECTED;
+WITH
+    t AS (SELECT 1),
+    t2 AS (
+        WITH t AS (SELECT 2)
+        SELECT * FROM t
+    )
+SELECT * FROM t2;
+CREATE TABLE person (name STRING, age INT);
+INSERT INTO person VALUES
+    ('Zen Hui', 25),
+    ('Anil B', 18),
+    ('Shone S', 16),
+    ('Mike A', 25),
+    ('John A', 18),
+    ('Jack N', 16);
+
+-- Reduce the number of shuffle partitions to 2 to illustrate the behavior of `CLUSTER BY`.
+-- It's easier to see the clustering and sorting behavior with less number of partitions.
+SET spark.sql.shuffle.partitions = 2;
+
+-- Select the rows with no ordering. Please note that without any sort directive, the results
+-- of the query is not deterministic. It's included here to show the difference in behavior
+-- of a query when `CLUSTER BY` is not used vs when it's used. The query below produces rows
+-- where age column is not sorted.
+SELECT age, name FROM person;
+
+
+-- Produces rows clustered by age. Persons with same age are clustered together.
+-- In the query below, persons with age 18 and 25 are in first partition and the
+-- persons with age 16 are in the second partition. The rows are sorted based
+-- on age within each partition.
+SELECT age, name FROM person CLUSTER BY age;
+CREATE TABLE person (name STRING, age INT);
+INSERT INTO person VALUES
+    ('Zen Hui', 25),
+    ('Anil B', 18),
+    ('Shone S', 16),
+    ('Mike A', 25),
+    ('John A', 18),
+    ('Jack N', 16);
+
+-- Reduce the number of shuffle partitions to 2 to illustrate the behavior of `DISTRIBUTE BY`.
+-- It's easier to see the clustering and sorting behavior with less number of partitions.
+SET spark.sql.shuffle.partitions = 2;
+
+-- Select the rows with no ordering. Please note that without any sort directive, the result
+-- of the query is not deterministic. It's included here to just contrast it with the
+-- behavior of `DISTRIBUTE BY`. The query below produces rows where age columns are not
+-- clustered together.
+SELECT age, name FROM person;
+
+
+-- Produces rows clustered by age. Persons with same age are clustered together.
+-- Unlike `CLUSTER BY` clause, the rows are not sorted within a partition.
+SELECT age, name FROM person DISTRIBUTE BY age;
+CREATE TABLE dealer (id INT, city STRING, car_model STRING, quantity INT);
+INSERT INTO dealer VALUES
+    (100, 'Fremont', 'Honda Civic', 10),
+    (100, 'Fremont', 'Honda Accord', 15),
+    (100, 'Fremont', 'Honda CRV', 7),
+    (200, 'Dublin', 'Honda Civic', 20),
+    (200, 'Dublin', 'Honda Accord', 10),
+    (200, 'Dublin', 'Honda CRV', 3),
+    (300, 'San Jose', 'Honda Civic', 5),
+    (300, 'San Jose', 'Honda Accord', 8);
+
+-- Sum of quantity per dealership. Group by `id`.
+SELECT id, sum(quantity) FROM dealer GROUP BY id ORDER BY id;
+
+
+-- Use column position in GROUP by clause.
+SELECT id, sum(quantity) FROM dealer GROUP BY 1 ORDER BY 1;
+
+
+-- Multiple aggregations.
+-- 1. Sum of quantity per dealership.
+-- 2. Max quantity per dealership.
+SELECT id, sum(quantity) AS sum, max(quantity) AS max FROM dealer GROUP BY id ORDER BY id;
+
+
+-- Count the number of distinct dealer cities per car_model.
+SELECT car_model, count(DISTINCT city) AS count FROM dealer GROUP BY car_model;
+
+
+-- Sum of only 'Honda Civic' and 'Honda CRV' quantities per dealership.
+SELECT id, sum(quantity) FILTER (
+            WHERE car_model IN ('Honda Civic', 'Honda CRV')
+        ) AS sum(quantity) FROM dealer
+    GROUP BY id ORDER BY id;
+
+
+-- Aggregations using multiple sets of grouping columns in a single statement.
+-- Following performs aggregations based on four sets of grouping columns.
+-- 1. city, car_model
+-- 2. city
+-- 3. car_model
+-- 4. Empty grouping set. Returns quantities for all city and car models.
+SELECT city, car_model, sum(quantity) AS sum FROM dealer
+    GROUP BY GROUPING SETS ((city, car_model), (city), (car_model), ())
+    ORDER BY city;
+
+
+-- Group by processing with `ROLLUP` clause.
+-- Equivalent GROUP BY GROUPING SETS ((city, car_model), (city), ())
+SELECT city, car_model, sum(quantity) AS sum FROM dealer
+    GROUP BY city, car_model WITH ROLLUP
+    ORDER BY city, car_model;
+
+
+-- Group by processing with `CUBE` clause.
+-- Equivalent GROUP BY GROUPING SETS ((city, car_model), (city), (car_model), ())
+SELECT city, car_model, sum(quantity) AS sum FROM dealer
+    GROUP BY city, car_model WITH CUBE
+    ORDER BY city, car_model;
+
+--Prepare data for ignore nulls example
+CREATE TABLE person (id INT, name STRING, age INT);
+INSERT INTO person VALUES
+    (100, 'Mary', NULL),
+    (200, 'John', 30),
+    (300, 'Mike', 80),
+    (400, 'Dan', 50);
+
+--Select the first row in column age
+SELECT FIRST(age) FROM person;
+
+
+--Get the first row in column `age` ignore nulls,last row in column `id` and sum of column `id`.
+SELECT FIRST(age), LAST(id), SUM(id) FROM person;
+
+CREATE TABLE dealer (id INT, city STRING, car_model STRING, quantity INT);
+INSERT INTO dealer VALUES
+    (100, 'Fremont', 'Honda Civic', 10),
+    (100, 'Fremont', 'Honda Accord', 15),
+    (100, 'Fremont', 'Honda CRV', 7),
+    (200, 'Dublin', 'Honda Civic', 20),
+    (200, 'Dublin', 'Honda Accord', 10),
+    (200, 'Dublin', 'Honda CRV', 3),
+    (300, 'San Jose', 'Honda Civic', 5),
+    (300, 'San Jose', 'Honda Accord', 8);
+
+-- `HAVING` clause referring to column in `GROUP BY`.
+SELECT city, sum(quantity) AS sum FROM dealer GROUP BY city HAVING city = 'Fremont';
+
+
+-- `HAVING` clause referring to aggregate function.
+SELECT city, sum(quantity) AS sum FROM dealer GROUP BY city HAVING sum(quantity) > 15;
+
+-- `HAVING` clause referring to aggregate function by its alias.
+SELECT city, sum(quantity) AS sum FROM dealer GROUP BY city HAVING sum > 15;
+
+
+-- `HAVING` clause referring to a different aggregate function than what is present in
+-- `SELECT` list.
+SELECT city, sum(quantity) AS sum FROM dealer GROUP BY city HAVING max(quantity) > 15;
+
+-- `HAVING` clause referring to constant expression.
+SELECT city, sum(quantity) AS sum FROM dealer GROUP BY city HAVING 1 > 0 ORDER BY city;
+
+
+-- `HAVING` clause without a `GROUP BY` clause.
+SELECT sum(quantity) AS sum FROM dealer HAVING sum(quantity) > 10;
+-- single row, without a table alias
+SELECT * FROM VALUES ("one", 1);
+
+
+-- three rows with a table alias
+SELECT * FROM VALUES ("one", 1), ("two", 2), ("three", null) AS data(a, b);
+
+
+-- complex types with a table alias
+SELECT * FROM VALUES ("one", array(0, 1)), ("two", array(2, 3)) AS data(a, b);
+
+SELECT * FROM parquet.`examples/src/main/resources/users.parquet`;
+
+
+
+-- ORC file
+SELECT * FROM orc.`examples/src/main/resources/users.orc` ;
+
+-- JSON file
+SELECT * FROM json.`examples/src/main/resources/people.json`;
+
+-- Use employee and department tables to demonstrate different type of joins.
+SELECT * FROM employee;
+
+
+SELECT * FROM department;
+
+
+-- Use employee and department tables to demonstrate inner join.
+SELECT id, name, employee.deptno, deptname
+    FROM employee INNER JOIN department ON employee.deptno = department.deptno;
+
+
+-- Use employee and department tables to demonstrate left join.
+SELECT id, name, employee.deptno, deptname
+    FROM employee LEFT JOIN department ON employee.deptno = department.deptno;
+
+
+-- Use employee and department tables to demonstrate right join.
+SELECT id, name, employee.deptno, deptname
+    FROM employee RIGHT JOIN department ON employee.deptno = department.deptno;
+
+
+-- Use employee and department tables to demonstrate full join.
+SELECT id, name, employee.deptno, deptname
+    FROM employee FULL JOIN department ON employee.deptno = department.deptno;
+
+
+-- Use employee and department tables to demonstrate cross join.
+SELECT id, name, employee.deptno, deptname FROM employee CROSS JOIN department;
+
+
+-- Use employee and department tables to demonstrate semi join.
+SELECT * FROM employee SEMI JOIN department ON employee.deptno = department.deptno;
+
+
+-- Use employee and department tables to demonstrate anti join.
+SELECT * FROM employee ANTI JOIN department ON employee.deptno = department.deptno;
+
+CREATE TABLE person (id INT, name STRING, age INT);
+INSERT INTO person VALUES
+    (100, 'John', 30),
+    (200, 'Mary', NULL),
+    (300, 'Mike', 80),
+    (400, 'Dan',  50),
+    (500, 'Evan_w', 16);
+
+SELECT * FROM person WHERE name LIKE 'M%';
+
+
+SELECT * FROM person WHERE name LIKE 'M_ry';
+
+
+SELECT * FROM person WHERE name NOT LIKE 'M_ry';
+
+
+SELECT * FROM person WHERE name RLIKE 'M+';
+
+
+SELECT * FROM person WHERE name REGEXP 'M+';
+
+
+SELECT * FROM person WHERE name LIKE '%\\_%';
+
+
+SELECT * FROM person WHERE name LIKE '%$_%' ESCAPE '$';
+
+
+SELECT * FROM person WHERE name LIKE ALL ('%an%', '%an');
+
+
+SELECT * FROM person WHERE name LIKE ANY ('%an%', '%an');
+
+
+SELECT * FROM person WHERE name LIKE SOME ('%an%', '%an');
+
+
+SELECT * FROM person WHERE name NOT LIKE ALL ('%an%', '%an');
+
+
+SELECT * FROM person WHERE name NOT LIKE ANY ('%an%', '%an');
+
+
+SELECT * FROM person WHERE name NOT LIKE SOME ('%an%', '%an');
+
+CREATE TABLE person (name STRING, age INT);
+INSERT INTO person VALUES
+    ('Zen Hui', 25),
+    ('Anil B', 18),
+    ('Shone S', 16),
+    ('Mike A', 25),
+    ('John A', 18),
+    ('Jack N', 16);
+
+-- Select the first two rows.
+SELECT name, age FROM person ORDER BY name LIMIT 2;
+
+
+
+-- Specifying ALL option on LIMIT returns all the rows.
+SELECT name, age FROM person ORDER BY name LIMIT ALL ;
+
+
+-- A function expression as an input to LIMIT.
+SELECT name, age FROM person ORDER BY name LIMIT length('SPARK');
+
+CREATE TABLE person (name STRING, age INT);
+INSERT INTO person VALUES
+    ('Zen Hui', 25),
+    ('Anil B', 18),
+    ('Shone S', 16),
+    ('Mike A', 25),
+    ('John A', 18),
+    ('Jack N', 16);
+
+-- Skip the first two rows.
+SELECT name, age FROM person ORDER BY name OFFSET 2;
+
+
+-- Skip the first two rows and returns the next three rows.
+SELECT name, age FROM person ORDER BY name LIMIT 3 OFFSET 2;
+
+
+-- A function expression as an input to OFFSET.
+SELECT name, age FROM person ORDER BY name OFFSET length('SPARK');
+
+
+-- A non-foldable expression as an input to OFFSET is not allowed.
+SELECT name, age FROM person ORDER BY name OFFSET length(name);
+
+CREATE TABLE person (id INT, name STRING, age INT);
+INSERT INTO person VALUES
+    (100, 'John', 30),
+    (200, 'Mary', NULL),
+    (300, 'Mike', 80),
+    (400, 'Jerry', NULL),
+    (500, 'Dan',  50);
+
+-- Sort rows by age. By default rows are sorted in ascending manner with NULL FIRST.
+SELECT name, age FROM person ORDER BY age;
+
+
+-- Sort rows in ascending manner keeping null values to be last.
+SELECT name, age FROM person ORDER BY age NULLS LAST;
+
+
+-- Sort rows by age in descending manner, which defaults to NULL LAST.
+SELECT name, age FROM person ORDER BY age DESC;
+
+
+-- Sort rows in ascending manner keeping null values to be first.
+SELECT name, age FROM person ORDER BY age DESC NULLS FIRST;
+
+
+
+-- Sort rows based on more than one column with each column having different
+-- sort direction.
+SELECT * FROM person ORDER BY name ASC, age DESC;
+
+SELECT * FROM number1;
+
+  
+SELECT * FROM number2;
+
+
+SELECT c FROM number1 EXCEPT SELECT c FROM number2;
+
+SELECT c FROM number1 MINUS SELECT c FROM number2;
+
+
+SELECT c FROM number1 EXCEPT ALL (SELECT c FROM number2);
+
+
+SELECT c FROM number1 MINUS ALL (SELECT c FROM number2);
+
+
+-- [ ( ] relation [ ) ] INTERSECT [ ALL | DISTINCT ] [ ( ] relation [ ) ]
+
+(SELECT c FROM number1) INTERSECT (SELECT c FROM number2);
+
+
+(SELECT c FROM number1) INTERSECT DISTINCT (SELECT c FROM number2);
+
+
+(SELECT c FROM number1) INTERSECT ALL (SELECT c FROM number2);
+
+(SELECT c FROM number1) UNION (SELECT c FROM number2);
+
+
+(SELECT c FROM number1) UNION DISTINCT (SELECT c FROM number2);
+
+
+SELECT c FROM number1 UNION ALL (SELECT c FROM number2);
+CREATE TABLE person (zip_code INT, name STRING, age INT);
+INSERT INTO person VALUES
+    (94588, 'Zen Hui', 50),
+    (94588, 'Dan Li', 18),
+    (94588, 'Anil K', 27),
+    (94588, 'John V', NULL),
+    (94511, 'David K', 42),
+    (94511, 'Aryan B.', 18),
+    (94511, 'Lalit B.', NULL);
+
+-- Use `REPARTITION` hint to partition the data by `zip_code` to
+-- examine the `SORT BY` behavior. This is used in rest of the
+-- examples.
+
+-- Sort rows by `name` within each partition in ascending manner
+SELECT  name, age, zip_code FROM person SORT BY name;
+
+
+-- Sort rows within each partition using column position.
+SELECT  name, age, zip_code FROM person SORT BY 1;
+
+
+-- Sort rows within partition in ascending manner keeping null values to be last.
+SELECT  age, name, zip_code FROM person SORT BY age NULLS LAST;
+
+
+-- Sort rows by age within each partition in descending manner, which defaults to NULL LAST.
+SELECT  age, name, zip_code FROM person SORT BY age DESC;
+
+
+-- Sort rows by age within each partition in descending manner keeping null values to be first.
+SELECT  age, name, zip_code FROM person SORT BY age DESC NULLS FIRST;
+
+
+-- Sort rows within each partition based on more than one column with each column having
+-- different sort direction.
+SELECT  name, age, zip_code FROM person
+    SORT BY name ASC, age DESC;
+
+    SELECT * FROM test;
+
+
+SELECT * FROM test TABLESAMPLE (50 PERCENT);
+
+SELECT * FROM test TABLESAMPLE (5 ROWS);
+
+
+SELECT * FROM test TABLESAMPLE (BUCKET 4 OUT OF 10);
+SELECT * FROM range(6 + cos(3));
+
+
+-- range call with start and end
+SELECT * FROM range(5, 10);
+
+
+-- range call with numPartitions
+SELECT * FROM range(0, 10, 2, 200);
+
+
+-- range call with a table alias
+SELECT * FROM range(5, 8) AS test;
+
+SELECT explode(array(10, 20));
+
+
+SELECT inline(array(struct(1, 'a'), struct(2, 'b')));
+
+SELECT posexplode(array(10,20));
+
+
+SELECT stack(2, 1, 2, 3);
+
+
+SELECT json_tuple('{"a":1, "b":2}', 'a', 'b');
+
+
+SELECT parse_url('http://spark.apache.org/path?query=1', 'HOST');
+
+
+-- Use explode in a LATERAL VIEW clause
+CREATE TABLE test (c1 INT);
+INSERT INTO test VALUES (1);
+INSERT INTO test VALUES (2);
+SELECT * FROM test LATERAL VIEW explode (ARRAY(3,4)) AS c2;
+
+CREATE TABLE person (id INT, name STRING, age INT);
+INSERT INTO person VALUES
+    (100, 'John', 30),
+    (200, 'Mary', NULL),
+    (300, 'Mike', 80),
+    (400, 'Dan',  50);
+
+-- Comparison operator in `WHERE` clause.
+SELECT * FROM person WHERE id > 200 ORDER BY id;
+
+
+-- Comparison and logical operators in `WHERE` clause.
+SELECT * FROM person WHERE id = 200 OR id = 300 ORDER BY id;
+
+-- IS NULL expression in `WHERE` clause.
+SELECT * FROM person WHERE id > 300 OR age IS NULL ORDER BY id;
+
+
+-- Function expression in `WHERE` clause.
+SELECT * FROM person WHERE length(name) > 3 ORDER BY id;
+
+
+-- `BETWEEN` expression in `WHERE` clause.
+SELECT * FROM person WHERE id BETWEEN 200 AND 300 ORDER BY id;
+
+
+-- Scalar Subquery in `WHERE` clause.
+SELECT * FROM person WHERE age > (SELECT avg(age) FROM person);
+
+
+-- Correlated Subquery in `WHERE` clause.
+SELECT * FROM person AS parent
+    WHERE EXISTS (
+        SELECT 1 FROM person AS child
+        WHERE parent.id = child.id AND child.age IS NULL
+    );
+CREATE OR REPLACE TEMPORARY VIEW basic_pays AS SELECT * FROM VALUES
+('Diane Murphy','Accounting',8435),
+('Mary Patterson','Accounting',9998),
+('Jeff Firrelli','Accounting',8992),
+('William Patterson','Accounting',8870),
+('Gerard Bondur','Accounting',11472),
+('Anthony Bow','Accounting',6627),
+('Leslie Jennings','IT',8113),
+('Leslie Thompson','IT',5186),
+('Julie Firrelli','Sales',9181),
+('Steve Patterson','Sales',9441),
+('Foon Yue Tseng','Sales',6660),
+('George Vanauf','Sales',10563),
+('Loui Bondur','SCM',10449),
+('Gerard Hernandez','SCM',6949),
+('Pamela Castillo','SCM',11303),
+('Larry Bott','SCM',11798),
+('Barry Jones','SCM',10586)
+AS basic_pays(employee_name, department, salary);
+
+SELECT * FROM basic_pays;
+
+
+SELECT
+    department,
+    percentile_cont(0.25) WITHIN GROUP (ORDER BY salary) AS pc1,
+    percentile_cont(0.25) WITHIN GROUP (ORDER BY salary) FILTER (WHERE employee_name LIKE '%Bo%') AS pc2,
+    percentile_cont(0.25) WITHIN GROUP (ORDER BY salary DESC) AS pc3,
+    percentile_cont(0.25) WITHIN GROUP (ORDER BY salary DESC) FILTER (WHERE employee_name LIKE '%Bo%') AS pc4,
+    percentile_disc(0.25) WITHIN GROUP (ORDER BY salary) AS pd1,
+    percentile_disc(0.25) WITHIN GROUP (ORDER BY salary) FILTER (WHERE employee_name LIKE '%Bo%') AS pd2,
+    percentile_disc(0.25) WITHIN GROUP (ORDER BY salary DESC) AS pd3,
+    percentile_disc(0.25) WITHIN GROUP (ORDER BY salary DESC) FILTER (WHERE employee_name LIKE '%Bo%') AS pd4
+FROM basic_pays
+GROUP BY department
+ORDER BY department;
+
+CREATE TABLE employees (name STRING, dept STRING, salary INT, age INT);
+
+INSERT INTO employees VALUES ("Lisa", "Sales", 10000, 35);
+INSERT INTO employees VALUES ("Evan", "Sales", 32000, 38);
+INSERT INTO employees VALUES ("Fred", "Engineering", 21000, 28);
+INSERT INTO employees VALUES ("Alex", "Sales", 30000, 33);
+INSERT INTO employees VALUES ("Tom", "Engineering", 23000, 33);
+INSERT INTO employees VALUES ("Jane", "Marketing", 29000, 28);
+INSERT INTO employees VALUES ("Jeff", "Marketing", 35000, 38);
+INSERT INTO employees VALUES ("Paul", "Engineering", 29000, 23);
+INSERT INTO employees VALUES ("Chloe", "Engineering", 23000, 25);
+
+SELECT * FROM employees;
+
+
+SELECT name, dept, salary, RANK() OVER (PARTITION BY dept ORDER BY salary) AS rank FROM employees;
+
+
+SELECT name, dept, salary, DENSE_RANK() OVER (PARTITION BY dept ORDER BY salary ROWS BETWEEN
+    UNBOUNDED PRECEDING AND CURRENT ROW) AS dense_rank FROM employees;
+
+
+SELECT name, dept, age, CUME_DIST() OVER (PARTITION BY dept ORDER BY age
+    RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS cume_dist FROM employees;
+
+
+SELECT name, dept, salary, MIN(salary) OVER (PARTITION BY dept ORDER BY salary) AS min
+    FROM employees;
+
+SELECT name, salary,
+    LAG(salary) OVER (PARTITION BY dept ORDER BY salary) AS lag,
+    LEAD(salary, 1, 0) OVER (PARTITION BY dept ORDER BY salary) AS lead
+    FROM employees;
+
+
+
+SELECT id, v,
+    LEAD(v, 0) IGNORE NULLS OVER w lead,
+    LAG(v, 0) IGNORE NULLS OVER w lag,
+    NTH_VALUE(v, 2) IGNORE NULLS OVER w nth_value,
+    FIRST_VALUE(v) IGNORE NULLS OVER w first_value,
+    LAST_VALUE(v) IGNORE NULLS OVER w last_value
+    FROM test_ignore_null
+    WINDOW w AS (ORDER BY id)
+    ORDER BY id;
+
+    CREATE TABLE person (id INT, name STRING, age INT);
+INSERT INTO person VALUES
+    (100, 'John', 30),
+    (200, 'Mary', NULL),
+    (300, 'Mike', 80),
+    (400, 'Dan', 50);
+
+SELECT id, CASE WHEN id > 200 THEN 'bigger' ELSE 'small' END FROM person;
+
+
+SELECT id, CASE id WHEN 100 then 'bigger' WHEN  id > 300 THEN '300' ELSE 'small' END FROM person;
+
+SELECT * FROM person
+    WHERE 
+        CASE 1 = 1 
+            WHEN 100 THEN 'big' 
+            WHEN 200 THEN 'bigger'
+            WHEN 300 THEN 'biggest' 
+            ELSE 'small'
+        END = 'small';
+
+
+
+CREATE TABLE person (id INT, name STRING, age INT, class INT, address STRING);
+INSERT INTO person VALUES
+    (100, 'John', 30, 1, 'Street 1'),
+    (200, 'Mary', NULL, 1, 'Street 2'),
+    (300, 'Mike', 80, 3, 'Street 3'),
+    (400, 'Dan', 50, 4, 'Street 4');
+
+SELECT * FROM person
+    PIVOT (
+        SUM(age) AS a, AVG(class) AS c
+        FOR name IN ('John' AS john, 'Mike' AS mike)
+    );
+
+
+SELECT * FROM person
+    PIVOT (
+        SUM(age) AS a, AVG(class) AS c
+        FOR (name, age) IN (('John', 30) AS c1, ('Mike', 40) AS c2)
+    );
+
+    CREATE TABLE sales_quarterly (year INT, q1 INT, q2 INT, q3 INT, q4 INT);
+INSERT INTO sales_quarterly VALUES
+    (2020, null, 1000, 2000, 2500),
+    (2021, 2250, 3200, 4200, 5900),
+    (2022, 4200, 3100, null, null);
+
+-- column names are used as unpivot columns
+SELECT * FROM sales_quarterly
+    UNPIVOT (
+        sales FOR quarter IN (q1, q2, q3, q4)
+    );
+
+
+-- NULL values are excluded by default, they can be included
+-- unpivot columns can be alias
+-- unpivot result can be referenced via its alias
+SELECT up.* FROM sales_quarterly
+    UNPIVOT INCLUDE NULLS (
+        sales FOR quarter IN (q1 AS Q1, q2 AS Q2, q3 AS Q3, q4 AS Q4)
+    ) AS up;
+
+
+-- multiple value columns can be unpivoted per row
+SELECT * FROM sales_quarterly
+    UNPIVOT EXCLUDE NULLS (
+        (first_quarter, second_quarter)
+        FOR half_of_the_year IN (
+            (q1, q2) AS H1,
+            (q3, q4) AS H2
+        )
+    );
+
+    CREATE TABLE person (id INT, name STRING, age INT, class INT, address STRING);
+INSERT INTO person VALUES
+    (100, 'John', 30, 1, 'Street 1'),
+    (200, 'Mary', NULL, 1, 'Street 2'),
+    (300, 'Mike', 80, 3, 'Street 3'),
+    (400, 'Dan', 50, 4, 'Street 4');
+
+SELECT * FROM person
+    LATERAL VIEW EXPLODE(ARRAY(30, 60)) tableName AS c_age
+    LATERAL VIEW EXPLODE(ARRAY(40, 80)) AS d_age;
+
+SELECT c_age, COUNT(1) FROM person
+    LATERAL VIEW EXPLODE(ARRAY(30, 60)) AS c_age
+    LATERAL VIEW EXPLODE(ARRAY(40, 80)) AS d_age 
+GROUP BY c_age;
+
+
+SELECT * FROM person
+    LATERAL VIEW EXPLODE(ARRAY(a)) tableName AS c_age;
+
+SELECT * FROM person
+    LATERAL VIEW OUTER EXPLODE(ARRAY(a)) tableName AS c_age;
+CREATE TABLE t1 (c1 INT, c2 INT);
+INSERT INTO t1 VALUES (0, 1), (1, 2);
+
+CREATE TABLE t2 (c1 INT, c2 INT);
+INSERT INTO t2 VALUES (0, 2), (0, 3);
+
+SELECT * FROM t1,
+  LATERAL (SELECT * FROM t2 WHERE t1.c1 = t2.c1);
+
+
+SELECT a, b, c FROM t1,
+  LATERAL (SELECT c1 + c2 AS a),
+  LATERAL (SELECT c1 - c2 AS b),
+  LATERAL (SELECT a * b AS c);
+
+CREATE TABLE person (zip_code INT, name STRING, age INT);
+INSERT INTO person VALUES
+    (94588, 'Zen Hui', 50),
+    (94588, 'Dan Li', 18),
+    (94588, 'Anil K', 27),
+    (94588, 'John V', NULL),
+    (94511, 'David K', 42),
+    (94511, 'Aryan B.', 18),
+    (94511, 'Lalit B.', NULL);
+
+-- With specified output without data type
+SELECT TRANSFORM(zip_code, name, age)
+   USING 'cat' AS (a, b, c)
+FROM person
+WHERE zip_code > 94511;
+
+
+-- With specified output with data type
+SELECT TRANSFORM(zip_code, name, age)
+   USING 'cat' AS (a STRING, b STRING, c STRING)
+FROM person
+WHERE zip_code > 94511;
+
+
+-- Using ROW FORMAT DELIMITED
+SELECT TRANSFORM(name, age)
+    ROW FORMAT DELIMITED
+    FIELDS TERMINATED BY ','
+    LINES TERMINATED BY '\n'
+    NULL DEFINED AS 'NULL'
+    USING 'cat' AS (name_age string)
+    ROW FORMAT DELIMITED
+    FIELDS TERMINATED BY '@'
+    LINES TERMINATED BY '\n'
+    NULL DEFINED AS 'NULL'
+FROM person;
+
+
+-- Using Hive Serde
+SELECT TRANSFORM(zip_code, name, age)
+    ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe'
+    WITH SERDEPROPERTIES (
+      'field.delim' = '\t'
+    )
+    USING 'cat' AS (a STRING, b STRING, c STRING)
+    ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe'
+    WITH SERDEPROPERTIES (
+      'field.delim' = '\t'
+    )
+FROM person
+WHERE zip_code > 94511;
+
+
+-- Schema-less mode
+SELECT TRANSFORM(zip_code, name, age)
+    USING 'cat'
+FROM person
+WHERE zip_code > 94500;

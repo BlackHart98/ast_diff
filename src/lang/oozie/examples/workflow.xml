@@ -1,0 +1,65 @@
+<workflow-app xmlns="uri:oozie:workflow:1.0" name="map-reduce-wf">
+    <start to="mr-node"/>
+    <action name="mr-node">
+        <map-reduce>
+            <resource-manager>${resourceManager}</resource-manager>
+            <name-node>${nameNode}</name-node>
+            <prepare>
+                <delete path="${nameNode}/user/${wf:user()}/${examplesRoot}/output-data/${outputDir}"/>
+            </prepare>
+            <configuration>
+                <property>
+                    <name>mapred.job.queue.name</name>
+                    <value>${queueName}</value>
+                </property>
+                <property>
+                    <name>mapred.mapper.class</name>
+                    <value>org.apache.oozie.example.SampleMapper</value>
+                </property>
+                <property>
+                    <name>mapred.reducer.class</name>
+                    <value>org.apache.oozie.example.SampleReducer</value>
+                </property>
+                <property>
+                    <name>mapred.map.tasks</name>
+                    <value>1</value>
+                </property>
+                <property>
+                    <name>mapred.input.dir</name>
+                    <value>/user/${wf:user()}/${examplesRoot}/input-data/text</value>
+                </property>
+                <property>
+                    <name>mapred.output.dir</name>
+                    <value>/user/${wf:user()}/${examplesRoot}/output-data/${outputDir}</value>
+                </property>
+				<property>
+					<name>oozie.action.external.stats.write</name>
+					<value>true</value>
+				</property>
+            </configuration>
+        </map-reduce>
+        <ok to="java1"/>
+        <error to="fail"/>
+    </action>
+    <action name="java1">
+        <java>
+        <resource-manager>${resourceManager}</resource-manager>
+	    <name-node>${nameNode}</name-node>
+	    <configuration>
+	       <property>
+		    <name>mapred.job.queue.name</name>
+		    <value>${queueName}</value>
+		</property>
+	    </configuration>
+	    <main-class>MyTest</main-class>
+	    <arg>  ${hadoop:counters("mr-node")["FileSystemCounters"]["FILE_BYTES_READ"]}</arg>
+        <capture-output/>
+        </java>
+        <ok to="end" />
+        <error to="fail" />
+    </action>
+    <kill name="fail">
+        <message>Map/Reduce failed, error message[${wf:errorMessage(wf:lastErrorNode())}] in hadoop where ${1+2} is 3</message>
+    </kill>
+    <end name="end"/>
+</workflow-app>

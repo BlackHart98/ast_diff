@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coordinator-app xmlns="uri:oozie:coordinator:0.5" name="myScheduler" frequency="${coord:days(1)}" start="${start_time}" end="${end_time}">
+  <action xmlns="">
+    <workflow>
+      <app-path>workflows/test_workflow.xml</app-path>
+    </workflow>
+  </action>
+</coordinator-app>

@@ -1,0 +1,16 @@
+<!--Note: This is not tested -->
+
+<bundle-app name="sales_pipeline_bundle"  xmlns="uri:oozie:bundle:0.2">
+    <controls>
+        <kick-off-time>60</kick-off-time>
+    </controls>
+    <coordinator name="load-northwind-coord">
+        <app-path>${nameNode}/user/${user.name}/${oozieRoot}/coordinators/loadnorthwindcoord.xml</app-path>
+    </coordinator>
+    <coordinator name="build-dim-table-coord">
+        <app-path>${nameNode}/user/${user.name}/${oozieRoot}/coordinators/builddimtablecoord.xml</app-path>
+    </coordinator>
+    <coordinator name="build-fact-table-coord">
+        <app-path>${nameNode}/user/${user.name}/${oozieRoot}/coordinators/buildfacttablecoord.xml</app-path>
+    </coordinator>
+</bundle-app>

@@ -1,0 +1,20 @@
+module scd
+
+
+@config(
+    materializedAs = SCD(
+        type = 2
+        , strategy = Timestamp
+        , uniqueKey = customerId
+        , updatedAt = updateAt
+    )
+    storageFormat = Iceberg
+)
+view EmployeeDeductions on Employee
+    attributes
+        customerId = customerId::Str
+        name = name::Str 
+        title = title::Str 
+        salary = salary::Str 
+        updatedAt = updatedAt::Timestamp
+end view

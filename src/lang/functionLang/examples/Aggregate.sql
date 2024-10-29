@@ -1,0 +1,16 @@
+SELECT any(col);
+SELECT any_value(col);
+SELECT any_value(col, t);
+SELECT approx_count_distinct(col1);
+SELECT approx_percentile(col, 0.5, 100);
+SELECT array_agg(col);
+SELECT avg(col);
+SELECT bit_and(col);
+SELECT bit_or(col);
+SELECT bitmap_construct_agg(bitmap_bit_position(col));
+SELECT bitmap_or_agg(col);
+SELECT bool_and(col);
+SELECT collect_list(col);
+SELECT collect_set(col);
+SELECT corr(c1, c2);
+SELECT count_if(col % 2 = 0);

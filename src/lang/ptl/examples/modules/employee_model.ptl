@@ -1,0 +1,16 @@
+module employee_model
+
+entity Employee
+    customerId : Str
+    name : Str 
+	title : Str 
+	salary : Str 
+end entity
+
+view TestView on Employee
+  attributes
+    employeeId = employeeId::Str
+    name = name::Str 
+    title = title::Str 
+    salary = salary::Str 
+end view

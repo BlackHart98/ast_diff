@@ -1,0 +1,1 @@
+SHOW CREATE VIEW orders_by_date

@@ -1,0 +1,1 @@
+module([expr(constant(string("sales_pipeline_bundle"),nothing())),expr(call(name("DAG",load()),[name("build_dim_table_coord",load())],[keyword(just("start_date"),constant(string("\"${start_time}\""),nothing())),keyword(just("end_date"),constant(string("\"${end_time}\""),nothing())),keyword(just("schedule_interval"),constant(string("\"${coord:days(1)}\""),nothing()))]))],[])

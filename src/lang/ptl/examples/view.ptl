@@ -1,0 +1,28 @@
+module vie
+
+@update 
+transform dim_product   with dim_product as existing
+attributes
+product_id = if new.product_id is not null  then new.product_id else existing.product_id
+ product_code = if new.product_code is not null  then new.product_code else existing.product_code
+ product_name = if new.product_name is not null  then new.product_name else existing.product_name
+ description = if new.description is not null  then new.description else existing.description
+ supplier_company = if new.supplier_company is not null  then new.supplier_company else existing.supplier_company
+ standard_cost = if new.standard_cost is not null  then new.standard_cost else existing.standard_cost
+ list_price = if new.list_price is not null  then new.list_price else existing.list_price
+ reorder_level = if new.reorder_level is not null  then new.reorder_level else existing.reorder_level
+ target_level = if new.target_level is not null  then new.target_level else existing.target_level
+ quantity_per_unit = if new.quantity_per_unit is not null  then new.quantity_per_unit else existing.quantity_per_unit
+ discontinued = if new.discontinued is not null  then new.discontinued else existing.discontinued
+ minimum_reorder_quantity = if new.minimum_reorder_quantity is not null  then new.minimum_reorder_quantity else existing.minimum_reorder_quantity
+ category = if new.category is not null  then new.category else existing.category
+ attachments = if new.attachments is not null  then new.attachments else existing.attachments
+ insertion_timestamp = if new.insertion_timestamp is not null  then new.insertion_timestamp else existing.insertion_timestamp
+
+
+filter
+existing.product_id or (new.row_number == 1)
+
+
+        full outer join stg_new_product  as new on existing.product_id == new.product_id
+        end transform

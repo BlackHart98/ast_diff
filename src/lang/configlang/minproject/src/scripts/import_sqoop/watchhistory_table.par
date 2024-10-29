@@ -1,0 +1,17 @@
+--connect
+jdbc:postgresql://database:5432/postgres?currentSchema=temp_db
+--table
+watchhistory
+--username
+postgres
+--password
+passw0rd
+--num-mappers
+1
+--hive-import
+--hive-table
+staging.watchhistory
+--map-column-hive
+w_c_id=STRING,w_s_symb=STRING,w_dts=STRING,w_action=STRING
+--target-dir
+/user/sqoop/watchhistory

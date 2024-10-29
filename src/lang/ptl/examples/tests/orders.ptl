@@ -1,0 +1,10 @@
+module HQL 
+  
+@dropIfExist  
+view orders 
+    (view _ on northwind.orders 
+        attributes
+            *
+            ingestion_timestamp = currentTimeStamp()
+    end view)
+end view

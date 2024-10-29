@@ -1,0 +1,93 @@
+SELECT book, rank()
+  OVER (ORDER BY year)
+FROM Library;
+
+SELECT book, row_number()
+  OVER(ORDER BY year)
+FROM Library;
+
+select count(*)
+ OVER(ORDER BY year)
+FROM Library;
+
+select min(a)
+ OVER(partition by a, b ORDER BY year, c) a
+FROM Library;
+
+
+SELECT book, LEAD(a, 1, true) 
+OVER(partition by a, b ORDER BY year, c)
+FROM Library;
+
+SELECT book, LAST_VALUE(item)
+  OVER (ORDER BY year)
+FROM Library;
+
+SELECT book, LAST_VALUE(item, true)
+  OVER (ORDER BY year)
+FROM Library;
+
+SELECT book, LAST_VALUE(item)
+  OVER (
+    ORDER BY year
+    RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
+FROM Library;
+
+WITH Numbers AS
+ (SELECT 1 as x from dual 
+  UNION ALL SELECT 2 from dual 
+  UNION ALL SELECT 2 from dual 
+  UNION ALL SELECT 5 from dual 
+  UNION ALL SELECT 8 from dual 
+  UNION ALL SELECT 10 from dual 
+  UNION ALL SELECT 10 from dual 
+)
+SELECT x,
+  RANK() OVER (ORDER BY x ASC) AS rank,
+  DENSE_RANK() OVER (ORDER BY x ASC) AS dense_rank,
+  ROW_NUMBER() OVER (ORDER BY x) AS row_num
+FROM Numbers;
+
+SELECT rank() OVER (ORDER BY sum(b))
+FROM T
+GROUP BY a;
+
+SELECT a, SUM(b) OVER (PARTITION BY c ORDER BY d ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
+FROM T;
+
+SELECT a, AVG(b) OVER (PARTITION BY c ORDER BY d ROWS BETWEEN 3 PRECEDING AND CURRENT ROW)
+FROM T;
+
+
+SELECT a, AVG(b) OVER (PARTITION BY c ORDER BY d ROWS BETWEEN 3 PRECEDING AND 3 FOLLOWING)
+FROM T;
+
+SELECT 
+ a,
+ COUNT(b) OVER (PARTITION BY c),
+ SUM(b) OVER (PARTITION BY c)
+FROM T;
+
+SELECT 
+ a,
+ COUNT(b) OVER (PARTITION BY c) AS b_count,
+ SUM(b) OVER (PARTITION BY c) b_sum
+FROM T;
+
+SELECT a, SUM(b) OVER w
+FROM T
+WINDOW w AS (PARTITION BY c ORDER BY d ROWS UNBOUNDED PRECEDING);
+
+SELECT a, LEAD(a) OVER (PARTITION BY b ORDER BY C)
+FROM T;
+
+SELECT a, LAG(a, 3, 0) OVER (PARTITION BY b ORDER BY C)
+FROM T;
+
+select a, COUNT(distinct a) OVER (PARTITION BY b)
+FROM T;
+
+
+
+
+

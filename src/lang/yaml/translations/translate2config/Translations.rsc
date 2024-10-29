@@ -1,0 +1,1 @@
+module lang::ptl::translations::translate2config::Translations

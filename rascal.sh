@@ -1,2 +1,3 @@
 #! /bin/bash
-exec java -jar ./lib/rascal-shell-stable.jar $*
+exec java -jar /Applications/rascal-shell-stable.jar $*
+

@@ -1,0 +1,25 @@
+<coordinator-app name="incremental-load-coordinator" frequency="${coord:days(1)}" start="${coord:date(days=-1)}" end="${coord:date(days=30)}" timezone="UTC" xmlns="uri:oozie:coordinator:0.5">
+    <controls>
+        <timeout>${my_timeout}</timeout>
+        <concurrency>${my_concurrency}</concurrency>
+    </controls>
+    <action>
+        <workflow>
+            <app-path>${nameNode}/user/${user.name}/${oozieRoot}/workflows/incremental_load_workflow.xml</app-path>
+            <configuration>
+                <property>
+                    <name>jobTracker</name>
+                    <value>${jobTracker}</value>
+                </property>
+                <property>
+                    <name>nameNode</name>
+                    <value>${nameNode}</value>
+                </property>
+                <property>
+                    <name>queueName</name>
+                    <value>${queueName}</value>
+                </property>
+            </configuration>
+        </workflow>
+    </action>
+</coordinator-app>

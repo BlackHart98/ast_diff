@@ -1,0 +1,17 @@
+--connect
+jdbc:postgresql://database:5432/postgres?currentSchema=temp_db
+--table
+cashtransaction
+--username
+postgres
+--password
+passw0rd
+--num-mappers
+1
+--hive-import
+--hive-table
+staging.cashtransaction
+--map-column-hive
+ct_ca_id=STRING,ct_dts=STRING,ct_amt=FLOAT,ct_name=STRING
+--target-dir
+/user/sqoop/cashtransaction

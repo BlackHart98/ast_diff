@@ -1,0 +1,21 @@
+module hive_check
+
+@config(
+  materializedAs = SCD(
+        type = 2
+        , strategy = Check
+        , uniqueKey = customerId
+        , checkAttrs = [name, title, salary, phone]
+        , updatedAt = updatedAt
+  )
+)
+@ifNotExists
+view EmployeeDeductions on Employee
+  attributes
+    customerId = customerId::Str
+    name = name::Str
+    title = title::Str
+    salary = salary::Str
+    gender = gender::Str
+    updatedAt = updatedAt::Timestamp
+end view

@@ -1,0 +1,10 @@
+module HQL 
+  
+ @dropIfExist  
+view employee 
+(view _ on northwind.employees 
+      attributes
+      *
+ ingestion_timestamp = currentTimeStamp()
+       end view)
+end view

@@ -1,0 +1,17 @@
+--connect
+jdbc:postgresql://database:5432/postgres?currentSchema=temp_db
+--table
+time
+--username
+postgres
+--password
+passw0rd
+--num-mappers
+1
+--hive-import
+--hive-table
+staging.time
+--map-column-hive
+sk_timeid=STRING,timevalue=STRING,hourid=INT,hourdesc=STRING,minuteid=INT,minutedesc=STRING,secondid=INT,seconddesc=STRING,markethoursflag=STRING,officehoursflag=STRING
+--target-dir
+/user/sqoop/time

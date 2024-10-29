@@ -1,0 +1,17 @@
+module Spark
+
+entity Fact_sales 
+      order_id :Int  
+      product_id :Int  
+      customer_id :Int  
+      employee_id :Int  
+      shipper_id :Int  
+      quantity :Int  
+      status_id :Int  
+      date_allocated :Date  
+      purchase_order_id :Int  
+      inventory_id :Int  
+      order_date :Date  
+      shipped_date :Date  
+      paid_date :Date  
+end entity

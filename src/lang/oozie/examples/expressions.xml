@@ -1,0 +1,31 @@
+${4> 3}
+${1> (4/2)}
+${4.0>= 3}
+${100.0 == 100}
+${(10*10) ne 100}
+${'a' > 'b'}
+${'hip' lt 'hit'}
+${4> 3}
+${1.2E4 + 1.4}
+${3 div 4}
+${10 mod 4}
+${((x, y) -> x + y)(3, 5.5)}
+${!empty param.Add} <!-- if the request parameter named Add is null or an empty string -->
+
+<!-- The context path -->
+${pageContext.request.contextPath}
+
+${sessionScope.cart.numberOfItems} <!-- The value of the numberOfItems property of the session-scoped attribute named cart -->
+
+${param['mycom.productId']}
+
+${header["host"]}
+
+${departments[deptName]}
+
+${requestScope['javax.servlet.forward.servlet_path']}
+
+#{customer.lName}
+
+#{customer.calcTotal}
+${fs:exists('/apps/hive/warehouse/orc_table') eq 'false'}

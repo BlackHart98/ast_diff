@@ -1,0 +1,4 @@
+module Spark
+
+entity Dim_product extends Stg_new_product 
+end entity

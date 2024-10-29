@@ -1,0 +1,3 @@
+SHOW TBLPROPERTIES orders;
+
+SHOW TBLPROPERTIES orders('comment');

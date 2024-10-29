@@ -1,0 +1,14 @@
+module testHive
+
+
+@dropIfExist
+         entity Dim_product extends Stg_new_product 
+          
+  end entity
+
+entity Bank
+  name :Str (required,size[ 90]) 
+  emails :Str  
+  duration: Float
+  bankSize : Int
+end entity

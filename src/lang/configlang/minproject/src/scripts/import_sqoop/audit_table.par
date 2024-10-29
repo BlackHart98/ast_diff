@@ -1,0 +1,17 @@
+--connect
+jdbc:postgresql://database:5432/postgres?currentSchema=temp_db
+--table
+audit
+--username
+postgres
+--password
+passw0rd
+--num-mappers
+1
+--hive-import
+--hive-table
+staging.audit
+--map-column-hive
+dataset=STRING,batchid=STRING,audit_date=STRING,attribute=STRING,value=FLOAT,dvalue=FLOAT
+--target-dir
+/user/sqoop/audit
