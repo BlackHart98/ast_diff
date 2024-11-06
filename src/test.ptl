@@ -1,4 +1,4 @@
-module desugar
+module test
 
 view EmployeeDeductionsView on Employee
     attributes

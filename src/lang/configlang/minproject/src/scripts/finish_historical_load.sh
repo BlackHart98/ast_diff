@@ -1,1 +1,0 @@
-date -u --rfc-3339='seconds' >> /home/workspace/times.txt

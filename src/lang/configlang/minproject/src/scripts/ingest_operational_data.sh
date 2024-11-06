@@ -1,1 +1,0 @@
-sh /opt/sqoop/import_sqoop.sh

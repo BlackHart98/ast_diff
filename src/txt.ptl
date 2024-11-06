@@ -1,0 +1,6 @@
+module txt
+
+view EmployeeDeductionsView on Employee as e
+    attributes
+        e.*
+end view
